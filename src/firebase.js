@@ -104,8 +104,8 @@ export async function returnEmail(value) {
 
 // Logining the user using Goggle federated identity provider
 const provider = new GoogleAuthProvider();
-provider.addScope('https://www.googleapis.com/auth/userinfo.email.readonly');
-provider.addScope('https://www.googleapis.com/auth/userinfo.profile.readonly');
+// provider.addScope('https://www.googleapis.com/auth/userinfo.email.readonly');
+provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
 
 export function signInWithGoogle() {
     signInWithPopup(auth, provider)
