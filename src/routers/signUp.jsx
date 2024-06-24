@@ -19,14 +19,7 @@ import {
 } from '../firebase'
 
 import GithubSignIn  from '../GithubSignIn';
-
-// import the images for the federated identity providers
-import googleLogo from './../../public/images/google-logo-sm.png';
-import githubLogo from './../../public/images/github-logo-sm.png';
-import githubLogoWhite from './../../public/images/github-logo-sm-white.png';
-
-// Importing the function to signin with google
-import { signInWithGoogle } from '../firebase';
+import GoogleSignIn from '../GoogleSignIn';
 
 
 import { onSnapshot } from 'firebase/firestore';
@@ -332,45 +325,9 @@ export default function SignUp() {
                         {/* Signing up wih a federated identity provider */}
                         <div className="federatedIdentity mt-5 flex flex-col sm:flex-row gap-3">
 
-                        <button 
-                        type="button"
-                        className='sm:w-1/2 hover:bg-black hover:text-white h-fit flex justify-center items-center py-2 px-2 border border-solid border-lessBlack rounded-md'
-                        onClick={signInWithGoogle}
-                        >
-                            <img
-                            width={25}
-                            height={25} 
-                            className='inline-block mr-2'
-                            src={googleLogo} 
-                            alt="Google Logo" 
-                            />
-                            <span>Sign in with Google</span>
-
-                        </button>
-                    
-                        {/* <button 
-                        type="button"
-                        className='sm:w-1/2 h-fit group hover:bg-black hover:text-white flex justify-center items-center py-2 px-2 border border-solid border-lessBlack rounded-md'
-                        >
-                            <img
-                            width={25}
-                            height={25} 
-                            className='inline-block mr-2 group-hover:hidden'
-                            src={githubLogo} 
-                            alt="Apple Logo" 
-                            /> */}
-
-                            {/* The second image will only appear upon hovering */}
-                            {/* <img
-                            width={25}
-                            height={25} 
-                            className='group-hover:inline-block mr-2 hidden'
-                            src={githubLogoWhite} 
-                            alt="Apple Logo" 
-                            />
-                            <span>Sign in with Github</span>
-                        </button> */}
+                        <GoogleSignIn/>
                         <GithubSignIn/>
+
                     </div>
 
                         <div className="register flex justify-center items-center mt-5">
