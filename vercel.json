@@ -9,8 +9,12 @@
         "dest": "/signin_helpers/init.json"
       },
       {
+        "handle": "filesystem"
+      },
+      {
         "src": "/(.*)",
         "dest": "/index.html"
       }
     ]
   }
+  
