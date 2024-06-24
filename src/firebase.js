@@ -29,7 +29,8 @@ import {
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCVVLoYFhb2Vrvm7T8-poauJt6XqE-ZpGQ",
-  authDomain: "notesapp-e0253.firebaseapp.com",
+  authDomain: "notes-app-zeta.vercel.app",
+  databaseURL: "https://notesapp-e0253.firebaseio.com",
   projectId: "notesapp-e0253",
   storageBucket: "notesapp-e0253.appspot.com",
   messagingSenderId: "963543362621",
