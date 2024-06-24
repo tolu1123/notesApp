@@ -1,9 +1,16 @@
 {
-    "rewrites": [
+    "routes": [
       {
-        "source": "/(.*)",
-        "destination": "/index.html"
+        "src": "/__/auth/(.*)",
+        "dest": "/signin_helpers/$1"
+      },
+      {
+        "src": "/__/firebase/init.json",
+        "dest": "/signin_helpers/init.json"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/index.html"
       }
     ]
   }
-  

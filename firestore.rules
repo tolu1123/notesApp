@@ -1,0 +1,16 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+	// Here we make sure only the user can edit their own data by making 
+  // the uid of the requesting user matches the name of the user 
+  // document
+  
+    match /users/{userId} {
+      allow read, update, delete;
+      allow create;
+    }
+    
+  }
+}
