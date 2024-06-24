@@ -9,7 +9,9 @@ import {
     createUserWithEmailAndPassword, 
     connectAuthEmulator,
     GoogleAuthProvider,
+    GithubAuthProvider,
     signInWithPopup,
+    signInWithRedirect,
 } from 'firebase/auth'
 
 import { 
@@ -131,4 +133,14 @@ export function signInWithGoogle() {
         // ...
         console.log(errorCode, errorMessage, email, credential);
     });
+}
+
+// Logging in the user using the github federated identity provider
+const githubProvider = new GithubAuthProvider();
+// Adding scope
+githubProvider.addScope('repo');
+
+// Defining the function to be used in signing in with github federated identity provider
+function signInWithGithub() {
+    signInWithRedirect(auth, githubProvider);
 }

@@ -18,10 +18,12 @@ import {
     auth,
 } from '../firebase'
 
+import GithubSignIn  from '../GithubSignIn';
+
 // import the images for the federated identity providers
 import googleLogo from './../../public/images/google-logo-sm.png';
-import appleLogo from './../../public/images/apple-logo-sm.png';
-import appleLogoOutline from './../../public/images/apple-logo-sm-white.svg';
+import githubLogo from './../../public/images/github-logo-sm.png';
+import githubLogoWhite from './../../public/images/github-logo-sm-white.png';
 
 // Importing the function to signin with google
 import { signInWithGoogle } from '../firebase';
@@ -346,7 +348,7 @@ export default function SignUp() {
 
                         </button>
                     
-                        <button 
+                        {/* <button 
                         type="button"
                         className='sm:w-1/2 h-fit group hover:bg-black hover:text-white flex justify-center items-center py-2 px-2 border border-solid border-lessBlack rounded-md'
                         >
@@ -354,18 +356,21 @@ export default function SignUp() {
                             width={25}
                             height={25} 
                             className='inline-block mr-2 group-hover:hidden'
-                            src={appleLogo} 
+                            src={githubLogo} 
                             alt="Apple Logo" 
-                            />
-                            <img
+                            /> */}
+
+                            {/* The second image will only appear upon hovering */}
+                            {/* <img
                             width={25}
                             height={25} 
                             className='group-hover:inline-block mr-2 hidden'
-                            src={appleLogoOutline} 
+                            src={githubLogoWhite} 
                             alt="Apple Logo" 
                             />
-                            <span>Sign in with Apple</span>
-                        </button>
+                            <span>Sign in with Github</span>
+                        </button> */}
+                        <GithubSignIn/>
                     </div>
 
                         <div className="register flex justify-center items-center mt-5">

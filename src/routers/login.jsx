@@ -20,8 +20,8 @@ import sideImg from '/images/small-team.png'
 
 // import the images for the federated identity providers
 import googleLogo from './../../public/images/google-logo-sm.png';
-import appleLogo from './../../public/images/apple-logo-sm.png';
-import appleLogoOutline from './../../public/images/apple-logo-sm-white.svg';
+import githubLogo from './../../public/images/github-logo-sm.png';
+import githubLogoWhite from './../../public/images/github-logo-sm-white.png';
 
 import {
     crossCheckField,
@@ -255,17 +255,19 @@ export default function Login() {
                             width={25}
                             height={25} 
                             className='inline-block mr-2 group-hover:hidden'
-                            src={appleLogo} 
+                            src={githubLogo} 
                             alt="Apple Logo" 
                             />
+
+                            {/* The second image will only appear upon hovering */}
                             <img
                             width={25}
                             height={25} 
                             className='group-hover:inline-block mr-2 hidden'
-                            src={appleLogoOutline} 
+                            src={githubLogoWhite} 
                             alt="Apple Logo" 
                             />
-                            <span>Sign in with Apple</span>
+                            <span>Sign in with Github</span>
                         </button>
                     </div>
 
