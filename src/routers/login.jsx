@@ -95,6 +95,7 @@ export default function Login() {
     useEffect(() => {
         onAuthStateChanged(auth, (user) => {
             if(user){
+                
                 navigate('/');
             }else{
                 console.log('user not signed in!')

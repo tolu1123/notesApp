@@ -12,7 +12,7 @@ export default function GithubSignIn() {
     // This is used to keep track of whether the user has clicked the sign in button or not.
     let [clickedSignIn, setClickedSignIn] = useState(false);
 
-    function signIn() {
+    function googleSignIn() {
         const provider = new GithubAuthProvider();
         signInWithRedirect(auth, provider);
         console.log('clicked on the sign in button');
@@ -40,6 +40,7 @@ export default function GithubSignIn() {
     useEffect(() => {
         // We will check if the user has clicked the sign in button
         // before we getting the redirect result from the sign in operation
+        console.log('We are here now', 'get result')
         if(clickedSignIn) {
             getResult();
         }
@@ -51,7 +52,7 @@ export default function GithubSignIn() {
             <button 
             type="button"
             className='sm:w-1/2 h-fit group hover:bg-black hover:text-white flex justify-center items-center py-2 px-2 border border-solid border-lessBlack rounded-md'
-            onClick={signIn}
+            onClick={googleSignIn}
             >
                 <img
                 width={25}
