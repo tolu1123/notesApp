@@ -58,32 +58,6 @@ export default function Login() {
 
     console.log(userDoesNotExist, passwordVisible)
 
-    // async function handleSubmit(e) {
-    //     let button = e.target.querySelector('button[type="submit"]');
-    //     try{
-    //         // disable the button to prevent multiple clicks
-    //         button.disabled = true;
-
-    //         const data = new FormData(e.target);
-    //         const formData = Object.fromEntries(data);
-            
-    //         const password = formData.password;
-    //         console.log(email, password);
-    //         // sign in the user with the credentials gotten
-    //         signInWithEmailAndPassword(auth, email, formData.password)
-    //         .catch((error) => {
-    //             const errorCode = error.code;
-    //             const errorMessage = error.message;
-    //             // Incase of any error, show us the error
-    //             console.log(errorCode, errorMessage);
-    //           });
-    //     }catch(err) {
-    //         // remove the disabled attribute from the button
-    //         button.disabled = false;
-    //         console.log(err)
-    //     }
-    // }
-
 
     async function handleInput(type, value) {
         const foundUser = await crossCheckField(type, value);

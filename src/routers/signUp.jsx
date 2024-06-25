@@ -28,9 +28,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 export async function action({request, params}) {
     const formData = await request.formData();
     console.log(formData);
-    setTimeout(() => {
-        console.log('10 seconds has passed');
-    }, 10000)
+    
     const username = formData.get('username');
     const email = formData.get('email');
     const password = formData.get('password');
