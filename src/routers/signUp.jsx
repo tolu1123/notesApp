@@ -36,7 +36,7 @@ export async function action({request, params}) {
     console.log(username, email, password, confirmPassword)
 
 
-    
+
 
     if(username.value !== '' && email.value !== '' && password.length > 6 && confirmPassword === password) {
         try {
@@ -130,10 +130,6 @@ export default function SignUp() {
 
                     <Form 
                         method='post'
-                        // onSubmit={(e) => {
-                        //     e.preventDefault();
-                        //     handleSubmit(e)
-                        // }}
                         className='w-full sm:w-[90%] md:w-4/5'
                     >
  
