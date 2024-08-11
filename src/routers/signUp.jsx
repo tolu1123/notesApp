@@ -35,7 +35,7 @@ export async function action({request, params}) {
     const confirmPassword = formData.get('confirmPassword');
     console.log(username, email, password, confirmPassword)
 
-    
+
     
 
     if(username.value !== '' && email.value !== '' && password.length > 6 && confirmPassword === password) {
@@ -71,12 +71,6 @@ export default function SignUp() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // const unSubscribe = onSnapshot(userRef, (docs) => {
-        //     docs.forEach(doc => {
-        //         console.log(doc.data());
-        //     })
-        // });
-
         const unSubscribeAuth = onAuthStateChanged(auth, (user) => {
             if(user) {
                 navigate('/');

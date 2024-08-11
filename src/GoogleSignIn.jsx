@@ -1,29 +1,18 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 
 import {auth} from './firebase';
-import { GoogleAuthProvider, signInWithRedirect, getRedirectResult} from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup} from 'firebase/auth';
 
 // import the images for the federated identity providers
-import googleLogo from './../public/images/google-logo-sm.png';
-import { set } from 'firebase/database';
+import googleLogo from '/images/google-logo-sm.png';
 
 export default function GoogleSignIn() {
 
-    // This is used to keep track of whether the user has clicked the sign in button or not.
-    let [clickedSignIn, setClickedSignIn] = useState(false);
-
     function signIn() {
+        // Signing the user in with signInWithPopup
         const provider = new GoogleAuthProvider();
-        signInWithRedirect(auth, provider);
-
-        // We will set the clickedSignIn to true to indicate that the user has clicked the sign in button
-        setClickedSignIn(true);
-    }
-
-    async function getResult() {
-        try {
-            const result = await getRedirectResult(auth);
-            if (result) {
+        signInWithPopup(auth, provider)
+            .then((result) => {
                 // This gives you a Google Access Token. You can use it to access Google APIs.
                 const credential = GoogleAuthProvider.credentialFromResult(result);
                 const token = credential.accessToken;
@@ -31,19 +20,11 @@ export default function GoogleSignIn() {
                 // The signed-in user info.
                 const user = result.user;
                 console.log('User Info:', user);
-            }
-        } catch(error) {
-            console.error('Error during sign-in:', error.code, error.message);
-        };
+            }).catch((error) => {
+                console.error('Error during sign-in:', error.code, error.message);
+            })
     }
 
-    useEffect(() => {
-        // We will check if the user has clicked the sign in button
-        // before we getting the redirect result from the sign in operation
-        if(clickedSignIn) {
-            getResult();
-        }
-    }, [])
 
     return (
         <button 
