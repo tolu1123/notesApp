@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 body {
-  width: 100vw;
   height: 100vh;
 }
 
@@ -158,3 +157,4 @@ body {
 .mobileSearch {
   transition: transform, opacity, 300ms linear;
 }
+

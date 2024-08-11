@@ -126,10 +126,11 @@ export default function SignUp() {
 
             <div className='login flex sm:flex-grow flex-col-reverse md:flex-row p-7 justify-center items-center'>
 
-                <div className="flex flex-col items-center md:justify-center md:items-center w-full md:w-1/2">
+                <div className="flex flex-col items-center md:justify-center md:items-center md:w-1/2">
 
                     <Form 
                         method='post'
+                        autoComplete='off'
                         className='w-full sm:w-[90%] md:w-4/5'
                     >
  

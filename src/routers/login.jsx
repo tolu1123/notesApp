@@ -100,11 +100,7 @@ export default function Login() {
                 
                 <Form
                 method='post'
-                // onSubmit={(e) => {
-                //     e.preventDefault;
-                //     // calling the function that handles the submition of the form
-                //     handleSubmit(e);
-                // }}
+                autoComplete='off'
                 className='w-full sm:w-[90%] md:w-4/5'
                 >
                     <h2 className='poppins-semibold text-3xl mb-5'>Sign in</h2>

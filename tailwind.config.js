@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: 'selector',
-  content: ['./src/main.jsx','./src/routers/login.jsx', './src/routers/signUp.jsx', './src/routers/notesApp.jsx', './src/Header.jsx', './src/MainContainer.jsx', './src/NoteList.jsx'],
+  content: ['./src/main.jsx','./src/routers/login.jsx', './src/routers/signUp.jsx', './src/GithubSignIn.jsx', './src/GoogleSignIn.jsx','./src/routers/notesApp.jsx', './src/Header.jsx', './src/MainContainer.jsx', './src/NoteList.jsx'],
   theme: {
     extend: {
       colors: {
