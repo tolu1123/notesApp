@@ -19,45 +19,49 @@ export async function  action({request}) {
     const actionCode = getParameterByName('oobCode');
     console.log(actionCode);
 
+    async function handleResetPassword(auth, actionCode) {
+        // Localize the UI to the selected language as determined by the lang
+        // parameter.
+        try {
+            const accountEmail = await verifyPasswordResetCode(auth, actionCode);
+            console.log(accountEmail, 'logged')
+            const newPassword = password;
+            await confirmPasswordReset(auth, actionCode, newPassword);
+            console.log('Password reset checked')
+            await signInWithEmailAndPassword(accountEmail, newPassword);
+            console.log('Trying to check if the user is signed in')
+            return null;
+        } catch (error) {
+            // Error occurred during confirmation. The code might have expired or the
+            // password is too weak.
+            const errorCode = error.code
+            const errorMessage = error.message
+            const errorElement = document.querySelector('.errorDiv');
+            //Fill the errorElement with the errorMessage
+            if(errorCode == 'auth/expired-action-code') {
+                errorElement.textContent = 'Your emaillink has expired, try resetting your password again.'
+            }else if(errorCode == 'auth/invalid-action-code') {
+                errorElement.textContent = 'Your emaillink is invalid, try resetting your password again.'
+            }else if (errorCode == 'auth/weak-password') {
+                errorElement.textContent = 'The password is too weak.';
+            } else {
+                errorElement.textContent = errorMessage;
+            }
+            errorElement.classList.remove("hidden");
+            // Add a timeout to hide the message after 3 seconds
+            setTimeout(() => {
+                errorElement.classList.add('hidden');
+            }, 3000)
+            throw new Error('An error occured',error)
+        }
+    }
     // Call the handleResetPassword function
     await handleResetPassword(auth, actionCode);
     return null;
 
 }
 
-async function handleResetPassword(auth, actionCode) {
-    // Localize the UI to the selected language as determined by the lang
-    // parameter.
-    try {
-        const accountEmail = await verifyPasswordResetCode(auth, actionCode);
-        const newPassword = password;
-        await confirmPasswordReset(auth, actionCode, newPassword);
-        await signInWithEmailAndPassword(accountEmail, newPassword);
-        return null;
-    } catch (error) {
-        // Error occurred during confirmation. The code might have expired or the
-        // password is too weak.
-        const errorCode = error.code
-        const errorMessage = error.message
-        const errorElement = document.querySelector('.errorDiv');
-        //Fill the errorElement with the errorMessage
-        if(errorCode == 'auth/expired-action-code') {
-            errorElement.textContent = 'Your emaillink has expired, try resetting your password again.'
-        }else if(errorCode == 'auth/invalid-action-code') {
-            errorElement.textContent = 'Your emaillink is invalid, try resetting your password again.'
-        }else if (errorCode == 'auth/weak-password') {
-            errorElement.textContent = 'The password is too weak.';
-        } else {
-            errorElement.textContent = errorMessage;
-        }
-        errorElement.classList.remove("hidden");
-        // Add a timeout to hide the message after 3 seconds
-        setTimeout(() => {
-            errorElement.classList.add('hidden');
-        }, 3000)
-        throw new Error('An error occured',error)
-    }
-}
+
 
 export default function CreateNewPassword() {
     const navigate = useNavigate()
