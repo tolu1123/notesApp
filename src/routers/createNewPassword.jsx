@@ -2,7 +2,7 @@ import React,{useState, useRef, useEffect} from 'react'
 
 import { Form, useNavigate } from 'react-router-dom';
 import sideImg from "/images/small-team.png";
-import { verifyPasswordResetCode, confirmPasswordReset,signInWithEmailAndPassword, onAuthStateChanged} from "firebase/auth";
+import { verifyPasswordResetCode, confirmPasswordReset, signInWithEmailAndPassword, onAuthStateChanged} from "firebase/auth";
 import { auth } from "../auth/firebase";
 
 // Function to get parameter
@@ -28,7 +28,7 @@ export async function  action({request}) {
             const newPassword = password;
             await confirmPasswordReset(auth, actionCode, newPassword);
             console.log('Password reset checked')
-            await signInWithEmailAndPassword(accountEmail, newPassword);
+            await signInWithEmailAndPassword(auth, accountEmail, newPassword);
             console.log('Trying to check if the user is signed in')
             return null;
         } catch (error) {
