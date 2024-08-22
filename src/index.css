@@ -2,7 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* For WebKit (Safari, Chrome, etc.) */
+::-webkit-scrollbar {
+  /* or any suitable width */
+}
+
+::-webkit-scrollbar-track {
+  /* background-color: #DEDEDE; */
+}
+
+::-webkit-scrollbar-thumb {
+  /* background: #000; Track color */
+  /* border: 3px solid var(--lightPink); */
+}
+
 body {
+  /* width: 100vw; */
   height: 100vh;
 }
 
@@ -10,6 +25,13 @@ body {
   width: 100%;
   /* height: 100%; */
 }
+ 
+
+body {
+  height: 100vh;
+}
+
+ 
 
 
 .poppins-thin {
@@ -140,6 +162,14 @@ body {
   font-variation-settings:
     "slnt" 0;
 }
+.inter-medium {
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-variation-settings:
+    "slnt" 0;
+}
 
 .fake-logo {
   font-size: 1.4rem;
@@ -158,3 +188,74 @@ body {
   transition: transform, opacity, 300ms linear;
 }
 
+.main-container {
+  height: calc(100vh - 80px);
+}
+
+
+.editor {
+  height: calc(100vh - 500px) !important;
+}
+
+
+.notSelected {
+  background-color: #DEDEDE;
+}
+.notSelected .date {
+  color:#888888;
+}
+.notSelected .title {
+  color: #363636;
+}
+.notSelected .content {
+  color: #727272;
+}
+.notSelected .tagContainer {
+  background-color: #EEEEEE;
+}
+.notSelected .tag {
+  color: #8A8A8A;
+}
+
+
+
+
+button[data-name='live'] {
+  display: none!important;
+}
+
+button[data-name='fullscreen'] {
+  visibility: hidden!important;
+}
+
+td:nth-child(2) {
+  padding-left: 10px;
+}
+
+
+@media (min-width: 768px) {
+  .editor {
+    height: calc(100vh - 240px) !important;
+  }
+  .selected {
+    background-color: #DEDEDE;
+  }
+  .not-selected {
+    background-color: #FBFBFB;
+  }
+  .selected .date {
+    color:#888888;
+  }
+  .selected .title {
+    color: #363636;
+  }
+  .selected .content {
+    color: #727272;
+  }
+  .selected .tagContainer {
+    background-color: #EEEEEE;
+  }
+  .selected .tag {
+    color: #8A8A8A;
+  }
+}

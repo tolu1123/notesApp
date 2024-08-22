@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: 'selector',
-  content: ['./src/main.jsx','./src/routers/login.jsx', './src/routers/signUp.jsx', './src/GithubSignIn.jsx', './src/GoogleSignIn.jsx','./src/routers/notesApp.jsx', './src/Header.jsx', './src/MainContainer.jsx', './src/NoteList.jsx'],
+  content: ['./src/main.jsx','./src/routers/login.jsx', './src/routers/signUp.jsx', './src/routers/forgotPassword.jsx', './src/routers/createNewPassword.jsx', './src/auth/GithubSignIn.jsx', './src/auth/GoogleSignIn.jsx','./src/routers/notesApp.jsx', './src/app/Header.jsx', './src/app/MainContainer.jsx', './src/app/NoteList.jsx', './src/app/CreateNotes.jsx', './src/app/Editor.jsx', './src/app/EmptyNote.jsx', './src/app/SelectNote.jsx'],
   theme: {
     extend: {
       colors: {
@@ -16,6 +16,10 @@ export default {
         transparent: '#00000000',
         red: '#ff0000',
         green: '#00ff00',
+        unselected: '#FBFBFB',
+        unselectedText: '#C6C6C6',
+        unselectedHeading: '#868686',
+        unselectedContent: '#BABABA',
       },
     },
   },

@@ -11,6 +11,15 @@ import SignUp, {
   action as signUpAction
 } from './routers/signUp';
 
+import ForgotPassword, {
+  action as forgotPasswordAction
+} from './routers/forgotPassword';
+
+import CreateNewPassword, {
+  action as createNewPasswordAction
+} from './routers/createNewPassword';
+
+
 import{
   createBrowserRouter,
   RouterProvider,
@@ -33,12 +42,13 @@ const router = createBrowserRouter([
     element: <SignUp />,
     action: signUpAction,
   }, {
-    path: 'notesApp',
-    element: <div>
-      <h1>
-        NotesApp
-      </h1>
-    </div>
+    path: 'forgot-password',
+    element: <ForgotPassword />,
+    action: forgotPasswordAction,
+  }, {
+    path: 'createNewPassword',
+    element: <CreateNewPassword />,
+    action: createNewPasswordAction,
   }
 ])
 
@@ -47,10 +57,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App />)
 
 function App() {
   return (
-  //  <ChangeThemeContext.Provider value={setDarkTheme}>
       <React.StrictMode>
         <RouterProvider router={router} />
       </React.StrictMode>
-    // </ChangeThemeContext.Provider>
   )
 }

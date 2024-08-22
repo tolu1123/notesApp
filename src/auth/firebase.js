@@ -65,14 +65,16 @@ export async function storeUsername(username, email, newUserId) {
     // we store the username and email in the database
     const docRef = await setDoc(doc(db, 'users', newUserId), {
         username: username,
-        email: email
+        email: email,
+        uid: newUserId,
+        profilePic: 'https://res.cloudinary.com/drlrawk5w/image/upload/v1724100934/profilePic_gxon9j.webp',
     })
-    // console.log('Document written with ID: ', docRef.id);
 }
 
 // function to check fields to avoid duplication and errors.
 export async function crossCheckField(type , value) {
     let found = false;
+    console.log(type,value)
     // we crosscheck the email in the database
     const q = query(userRef, where(type, '==', value));
     // we try to see if we have any user
@@ -102,4 +104,10 @@ export async function returnEmail(value) {
     })
     console.log(email)
     return email;
+}
+
+function updateNotes(uid) {
+    const usersRef = doc(db, 'users', uid);
+    // we will update the notes field in the database
+    
 }
