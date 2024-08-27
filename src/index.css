@@ -232,6 +232,12 @@ td:nth-child(2) {
   padding-left: 10px;
 }
 
+.selected {
+  background-color: #DEDEDE;
+}
+.not-selected {
+  background-color: #FBFBFB;
+}
 
 @media (min-width: 768px) {
   .editor {

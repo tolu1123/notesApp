@@ -1,16 +1,19 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
-import MarkdownEditor from '@uiw/react-markdown-editor';
 
 import MDEditor from '@uiw/react-md-editor';
 import rehypeSanitize from "rehype-sanitize";
 import debounce from 'lodash.debounce';
 
-import { doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { doc, updateDoc, deleteDoc, collection, onSnapshot } from "firebase/firestore";
 
 import { userNotes } from '../contexts/notesContext';
 import { selectedNoteContext } from '../contexts/selectedNoteContext';
 import { userContext } from '../contexts/userContext';
-import {db} from '../auth/firebase'
+
+import { onAuthStateChanged } from "firebase/auth";
+
+import {db, auth} from '../auth/firebase'
+ 
 
 export default function Editor({displayNote, setDisplayNote,forceChange, setForceChange}) {
 
@@ -23,45 +26,120 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
 
     //The array to store the tags
     const [noteTitle, setNoteTitle] = useState(null);
-    const [noteTags, setNoteTags] = useState([]);
+    const [noteTags, setNoteTags] = useState(selectedNote.tags);
 
     const titleRef = useRef(null); 
     const inputRef = useRef(null);
 
+    const [userId, setUserId] = useState('');
+
+    useEffect(() => {
+        if(userId !== '') return;
+        const userAuth = onAuthStateChanged(auth, (user) => {
+          // if user is not null, then we will get the userid
+          if(user && userId === '') {
+            setUserId(user.uid);
+            // console.log('This is the user id', user.uid);
+          }
+        })
+    
+        return () => userAuth()
+      })
+
+    useEffect(() => {
+        //We sync offline data with online data
+        let unsub = () => {};
+        const offlineData = JSON.parse(localStorage.getItem('offlineData'));
+      
+      
+        if (offlineData && offlineData.uid === userData.uid) {
+      
+          unsub = onSnapshot(
+            collection(db, `users/${userData.uid}/notes`),
+            { includeMetadataChanges: true },
+            (snapshot) => {
+      
+              snapshot.forEach(async (doc) => {
+                if (!snapshot.metadata.fromCache) {
+                //We will query the cloud data using the notes if there is a document that matches the unsynchronized data
+                // and that the unsynchronized note was dateUpdated is greater than the cloud data dateUpdated
+                //If there is a match, we will update the cloud data with the unsynchronized data
+                  if (offlineData.notes.some(note => note.id === doc.data().id && note.dateUpdated > doc.data().dateUpdated)) {
+                //We are checking if there is a note that matches the unsynchronized data and the unsynchronized note was  updated last
+
+                    const unsynchronizedNote = offlineData.notes.find(note => note.id === doc.data().id && note.dateUpdated > doc.data().dateUpdated);
+                    //Upload the data
+                    await updateDocument(unsynchronizedNote)
+                  }
+                }
+              });
+            }
+          );
+        }
+        return () => unsub();
+      }, [userData]);
+      
     // Update the noteTitle used for editing the note on RENDER
     useEffect(() => {
         setNoteTitle(selectedNote.title)
     }, [selectedNote.title])
 
-    console.log(noteTags, 'This is noteTags')
-    // Update the selected note tags when the noteTags state changes
+     
+
     useEffect(() => {
-        if(selectedNote.tags !== undefined) {
+        //If the note data we will update the localStorage
 
-            const formerTags = selectedNote.tags;
-    
-            setSelectedNote(prevState => {
-                let updatedContent = {
-                    ...prevState,
-                    dateUpdated: Date.now(),
-                    tags: [...new Set([...formerTags, ...noteTags])]
-                }
-
-                setTimeout(() => {
-                    updateDocument(updatedContent)
-                }, 500)
-
-                return  updatedContent;
-            })
+        //We will write data to localStorage and then check it even later when we are synchronizing data  
+        //as we can not depend on the use window.navigator.onLine because in a special use case on some browsers 
+        // if the user agent device is connected to a wifi which has an internet connectivity but its data subscription 
+        // is diminished, it will return true(while it is not connected to the internet.)
+        
+        if(localStorage.getItem('offlineData')) {
+            const offlineData = JSON.parse(localStorage.getItem('offlineData'));
+            //Explicit usage of the note we already set
+            offlineData.notes = notes;
+            localStorage.setItem('offlineData', JSON.stringify(offlineData));
+            console.log('Is this not working.')
+        }else {
+            //We could not find the offlineData, so we will set it explicitly
+            localStorage.setItem('offlineData', JSON.stringify({
+                name: userData.username,
+                email: userData.email,
+                uid: userData.uid,
+                notes: notes,
+            }))
         }
-    }, [noteTags])
+    }, [notes])
     
 
     // Function to update the document
     async function updateDocument(updatedObj) {
+
+        //Update the notes context
+        let element = notes.filter(ele => ele.dateCreated === selectedNote.dateCreated)
+        let updatedNotes = notes.map(ele => {
+            if(ele.dateCreated === selectedNote.dateCreated) {
+                return updatedObj;
+            } else {
+                return ele
+            }
+        })
+        console.log('Jehovah, this is where i call your name...')
+        //Sort the note
+        updatedNotes.sort((a, b) => b.dateUpdated - a.dateUpdated);
+        // We will update the note context now
+        setNotes(updatedNotes);
+
+
         if(userData.uid && selectedNote.id) {
-            const docRef = doc(db, `users/${userData.uid}/notes/${selectedNote.id}`);
-            await updateDoc(docRef, updatedObj);  
+            try {
+                const docRef = doc(db, `users/${userData.uid}/notes/${selectedNote.id}`);
+                await updateDoc(docRef, updatedObj);  
+            } catch (error) {
+                console.log('Error deleting the note')
+                throw new Error(error)
+            }
+            
         }
     }
 
@@ -111,6 +189,7 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
     const [content, setContent] = useState(selectedNote.content);
 
     useEffect(() => {
+        
         setContent(selectedNote.content);
 
     }, [selectedNote.content])
@@ -144,7 +223,7 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
         }else {
             setContent(value);
         }
-    }, 50);
+    }, 30);
 
     function padString(digit) {
         return digit.toString().padStart(2, '0')
@@ -157,14 +236,37 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
     }
     //Creating the tag labels
     //(used a ternary as the context is not available on first paint)
-    const tagLabels = selectedNote.tags === undefined ? '' :selectedNote?.tags?.map((tag, index) => {
+    const tagLabels = selectedNote.tags.map((tag, index) => {
         return (
             <span key={index} className="inline-block p-1 mx-1 mb-1 rounded-lg border border-solid border-fullBlack dark:border-white text-sm">
                 <span className="mr-0.5">{tag}</span>
                 <span 
                 className="closeBtn"
                 onClick={() => {
-                    setNoteTags(noteTags.filter((tag,i) => i !== index))
+                    //We are only allowed to delete a tag if there are more than or equals to 2 tags
+                    if(noteTags.length >= 2) {
+
+                        //We are deleting the tag from the selected note
+                        const formerTags = selectedNote.tags;
+                        const updatedTags = formerTags.filter((_,i) => i !== index);
+                        setSelectedNote(prevState => {
+                            let updatedContent = {
+                                ...prevState,
+                                dateUpdated: Date.now(),
+                                tags: updatedTags,
+                            }
+                            //Update the noteTags
+                            setNoteTags(updatedTags);
+                            //Set the selected note with the return value
+                            console.log('Update the noteTags');
+            
+                            setTimeout(() => {
+                                updateDocument(updatedContent)
+                            }, 500)
+            
+                            return  updatedContent;
+                        })
+                    }
                 }}
                 >
                     <i className="fa-sharp fa-light fa-xmark"></i>
@@ -176,29 +278,18 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
     return (
 
         <div className='flex flex-col flex-grow h-full'>
-        {/* <MarkdownEditor
-        value={content}
-        width='100%'
-        height="100%"
-        onChange={(value, viewUpdate) => {
-            saveContent(value)
-            console.log('Touched to edit!')
-        }}
-        className='markdown-editor !max-w-full h-full wmde-markdown-var bg-white dark:bg-black dark:text-white'
-        enablePreview={false}
-        overflow={false}
-        /> */}
+
         <div className="meta-pane p-5 bg-white dark:bg-black">
             <div className="">
-                <span 
+                <div 
                 onClick={() => {
                     setDisplayNote(false)
                     setSelectedNote({})
                 }}
-                className='sm:hidden text-white text-base w-10 h-10 dark:text-black'
+                className=' text-black text-base w-10 h-10 dark:text-white sm:hidden'
                 >
                     <i className="fa-sharp fa-regular fa-arrow-left"></i>
-                </span>
+                </div>
 
                 <div className="meta-contents text-black dark:text-white">
                     {/* Title of the note */}
@@ -219,7 +310,7 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
                             className='cursor-pointer text-sm'
                             onClick={handleDelete}
                         >
-                            <i class="fa-light fa-trash-can"></i>
+                            <i className="fa-light fa-trash-can"></i>
                         </span>
                     </div>
                     <table>
@@ -253,15 +344,14 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
                                     selectedNote?.tags?.length > 0 ? selectedNote.tags.map((tag, index, array) => {
                                         if(array.length - 1 === index) {
                                         return (<span key={index}>
-                                            <span className={`tagContainer selected inline-block px-2 py-1 mr-1 rounded-lg  text-xs`}>
-                                                <span className="tag">{tag}</span>
+                                            <span className={`tagContainer notSelected inline-block px-2 py-1 mr-1 rounded-lg  text-xs`}>
+                                                <span className="title">{tag}</span>
                                             </span>
-                                            <span key={index} className={`tagContainer selected cursor-pointer inline-block px-2 py-1 rounded-lg  text-xs`}>
-                                                <span className="mr-0.5 tag"><i class="fa-sharp fa-regular fa-plus"></i></span>
+                                            <span key={index} className={`tagContainer notSelected cursor-pointer inline-block px-2 py-1 rounded-lg  text-xs`}>
+                                                <span className="mr-0.5 title"><i className="fa-sharp fa-regular fa-plus"></i></span>
                                                 <span 
-                                                className="tag"
+                                                className="title"
                                                 onClick={() => {
-                                                    console.log('Add new tag')
                                                     setEditFlag(true);
                                                     setTagFlag(true);
                                                 }}
@@ -269,8 +359,8 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
                                             </span>
                                         </span>)
                                         } else {
-                                           return (<span key={index} className={`tagContainer selected inline-block px-2 py-1 ${index == 0 ? 'mr-1': 'mx-1'} rounded-lg  text-xs`}>
-                                                <span className="tag">{tag}</span>
+                                           return (<span key={index} className={`tagContainer notSelected inline-block px-2 py-1 ${index == 0 ? 'mr-1': 'mx-1'} rounded-lg  text-xs`}>
+                                                <span className="title">{tag}</span>
                                             </span>)
                                         }
                                     })
@@ -294,7 +384,7 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
         enableScroll={true}
         />
         
-        {/*The component for updating the tags  */}
+        {/*The component for updating the metaData  */}
         {editFlag && <div className="bg-opaqueBlack/[0.6]  dark:bg-lightGray/[0.4] dark:text-white absolute w-full h-full flex justify-center items-center z-[200] inset-0">
             <div className="modal-dialogue relative w-4/5 sm:w-3/5 bg-white dark:bg-black p-5 z-20 text-fullBlack dark:text-white">
                     {/* The close Button for the modal-dialogue*/}
@@ -364,9 +454,23 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
                                     className="grow inline-flex border border-solid border-fullBlack bg-white/[0.05] dark:border-white rounded px-2 py-1 focus:border-2 text-fullBlack dark:text-white placeholder:text-fullBlack dark:placeholder:text-white outline-none"
                                     onKeyDown={(e) => {
                                         
-                                        if(e.key === 'Enter') {
+                                        if(e.key === 'Enter' && e.target.value.trim() !== '') {
                                             // // We will add the tags to the list of tags but prevent duplicates
-                                            setNoteTags([...new Set([...noteTags, e.target.value.trim()])]);
+                                            
+                                            const formerTags = selectedNote.tags;
+                                            setSelectedNote(prevState => {
+                                                let updatedContent = {
+                                                    ...prevState,
+                                                    dateUpdated: Date.now(),
+                                                    tags: [...new Set([...formerTags,  e.target.value.trim()])]
+                                                }
+
+                                                setTimeout(() => {
+                                                    updateDocument(updatedContent)
+                                                }, 500)
+
+                                                return  updatedContent;
+                                            })
                                             e.target.value = '';
                                         }
                                     }}
@@ -378,13 +482,27 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
                                         () => {
                                             //I will add the tag to the list of tags but prevent empty strings
                                             if(inputRef.current.value.trim() !== '') {
-                                                setNoteTags([...new Set([...noteTags, inputRef.current.value.trim()])]);
+
+                                                const formerTags = selectedNote.tags;
+                                                setSelectedNote(prevState => {
+                                                    let updatedContent = {
+                                                        ...prevState,
+                                                        dateUpdated: Date.now(),
+                                                        tags: [...new Set([...formerTags,  e.target.value.trim()])]
+                                                    }
+
+                                                    setTimeout(() => {
+                                                        updateDocument(updatedContent)
+                                                    }, 500)
+
+                                                    return  updatedContent;
+                                                })
                                                 inputRef.current.value = '';
                                         
                                             }
                                         }
                                     }>
-                                        <i class="fa-sharp fa-regular fa-plus"></i>
+                                        <i className="fa-sharp fa-regular fa-plus"></i>
                                     </span>
                                 </div>
 
@@ -416,6 +534,12 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
                                                 return updatedContent;
                                             })
                                         }
+
+                                        // Setting state to close the modal
+                                        setEditFlag(false);
+                                        setTitleFlag(false);
+                                        setTagFlag(false);
+
                                     }
                                 }
                                 >

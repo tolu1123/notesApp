@@ -1,19 +1,26 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-
-const {onRequest} = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+const admin = require("firebase-admin");
+const {onCall} = require("firebase-functions/v2/https");
 
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+
+admin.initializeApp();
+
+// Creating our backend code
+exports.linkAccounts = onCall(async (data, context) => {
+  const email = data.email;
+
+  try {
+    // Get the user with the email
+    const userMetaData = await admin.auth().getUserByEmail(email);
+    const uid = userMetaData.uid;
+    // Create a custom token that will be used for signing the user in
+    const customToken = await admin.auth().createCustomToken(uid);
+    // Return the custom token to be used to sign the user in
+    return {
+      customToken: customToken,
+    };
+  } catch (error) {
+    logger.info(error.code, error.message);
+  }
+});

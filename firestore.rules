@@ -11,6 +11,11 @@ service cloud.firestore {
       allow read, update, delete;
       allow create;
     }
+
+    // Match any document in the notes sub-collection
+    match /users/{userId}/notes/{noteId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
     
   }
 }

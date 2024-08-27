@@ -13,8 +13,10 @@ import {userContext} from '../contexts/userContext'
 import {userNotes} from '../contexts/notesContext'
 import {themeContext} from '../contexts/themeContext'
 
-import { doc, collection, onSnapshot } from "firebase/firestore";
+import { doc, collection, onSnapshot, enableNetwork, disableNetwork, query, where} from "firebase/firestore";
 
+//A package for determining true internet connectivity
+// import isOnline from 'is-online';
 // const currentUser = auth.currentUser;
 
 
@@ -47,7 +49,8 @@ function NotesApp() {
   //The search value state to monitor the search value
   const [searchValue, setSearchValue] = useState('')
   //State to force update of outlet function
-  const [forceChange, setForceChange] = useState(0)
+  const [forceChange, setForceChange] = useState(0);
+
 
   useEffect(() => {
     //Set the dark-color-mode of the html element.
@@ -81,13 +84,36 @@ function NotesApp() {
   })
 
   useEffect(() => {
-    if(!userData.uid || userData.uid === '') return;
+    if(!userData?.uid || userData?.uid === '') return;
     const unsub = onSnapshot(collection(db, `users/${userData.uid}/notes`), (querySnapshot) => {
         const notes = []
         querySnapshot.forEach((doc) => {
-            notes.push(doc.data())
+            //If we are offline we may have some unsaved states which we need to synchronize locally due to firebase atomic setup of *transactions*, this we will do
+              if(localStorage.getItem('offlineData')){
+
+                const offlineData = JSON.parse(localStorage.getItem('offlineData'));
+
+                //The user is who they say they are(meaning the account that was used to persist the unsynchronized change is this same account)
+                //AND
+                //There is a note that matches one of the unsynchronized data and the unsychronized note was updated last
+                if(offlineData.uid === userId && offlineData.notes.some(ele => ele.dateCreated === doc.data().dateCreated && ele.dateUpdated > doc.data().dateUpdated)) {
+                  //Get the unsychronized note
+                  const unsynchronizedNote = offlineData.notes.filter(ele => ele.dateCreated === doc.data().dateCreated)[0]
+                  //Replace with the unsynchronized note
+                  notes.push(unsynchronizedNote);
+                }else {
+                  // The userId is not the same as the unsynchronized data id
+                  // So we do not continue with replacing data
+                  notes.push(doc.data())
+                }
+              } else {
+                // Do something here
+                notes.push(doc.data())
+              }
+            
         })
-        notes.sort((a, b) => b.dateUpdated - a.dateUpdated)
+        //We sort the note chronoligically(last updated note at the top of the note)
+        notes.sort((a, b) => b.dateUpdated - a.dateUpdated);
         console.log('Attemepting to check if our note here was updated')
         setNotes(notes)
     })

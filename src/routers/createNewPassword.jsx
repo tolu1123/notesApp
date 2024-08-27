@@ -24,12 +24,9 @@ export async function  action({request}) {
         // parameter.
         try {
             const accountEmail = await verifyPasswordResetCode(auth, actionCode);
-            console.log(accountEmail, 'logged')
             const newPassword = password;
             await confirmPasswordReset(auth, actionCode, newPassword);
-            console.log('Password reset checked')
             await signInWithEmailAndPassword(auth, accountEmail, newPassword);
-            console.log('Trying to check if the user is signed in')
             return null;
         } catch (error) {
             // Error occurred during confirmation. The code might have expired or the
@@ -107,8 +104,8 @@ export default function CreateNewPassword() {
 
             <div className="flex flex-col h-dvh items-center justify-center sm:items-start sm:justify-start">
             <header className="sm:px-8 sm:pt-4 sm:text-left text-center">
-            <h1 className="poppins-medium justify-self-start self-start text-fullBlack poppins-medium text-xl md:pb-0">
-                Your Logo
+            <h1 className="fake-logo poppins-medium justify-self-start self-start text-fullBlack text-xl md:pb-0">
+                NotesApp
             </h1>
             </header>
     

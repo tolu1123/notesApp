@@ -111,7 +111,7 @@ export default function Header({
         >
           <div>
             <img
-              src={userData.profilePic || profilePic}
+              src={userData?.profilePic || profilePic}
               alt=""
               className="hamburger block src w-8 h-8 object-top object-cover rounded-full"
               ref={hamburger}
@@ -137,13 +137,10 @@ export default function Header({
                 "dropDown",
                 "w-fit",
                 "absolute",
-                "right-4",
+                "right-5",
                 "bg-white",
                 "top-16",
                 "rounded-md",
-                "shadow-xl",
-                "dark:shadow-md",
-                "dark:shadow-white",
                 "dark:bg-fullBlack",
                 "z-10",
                 "dark:text-white",
@@ -155,7 +152,7 @@ export default function Header({
                   {/* Div for the profile picture */}
                   <div className="mb-1">
                     <img
-                      src={userData.profilePic || profilePic}
+                      src={userData?.profilePic || profilePic}
                       className="block w-10 h-10 object-top object-cover rounded-full"
                       alt=""
                     />
@@ -163,7 +160,7 @@ export default function Header({
 
                   {/* div for the account holder's username */}
                   <div className="text-center text-sm">
-                    <span className="username">{userData.username}</span>
+                    <span className="username">{userData?.username}</span>
                   </div>
                 </li>
 

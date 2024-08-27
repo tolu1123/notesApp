@@ -4,6 +4,8 @@ import {doc,addDoc,setDoc, collection} from 'firebase/firestore'
 import {auth,db} from '../auth/firebase'
 import { userContext } from "../contexts/userContext";
 import { updatePassword } from "firebase/auth";
+//Import nanoid for creating unique ids
+import { nanoid } from 'nanoid'
 
 export default function createNote({addNote, setAddNote}) {
     
@@ -18,29 +20,27 @@ export default function createNote({addNote, setAddNote}) {
 
     const inputRef = useRef(null)
 
-    console.log(userData.uid)
 
     // Function to create notes
     async function storeNote() {
         if(userData?.uid) {
             // Getting the pparentDocRef
             const parentDocRef = doc(db, 'users', userData.uid);
-            // Getting the sub-collection reference
-            const subCollectionRef = collection(parentDocRef, 'notes');
+            // Creating the sub-doc reference
+            const generatedId = nanoid();
+            const noteRef = doc(parentDocRef, 'notes', generatedId);
             
             //Storing the note
             try{
-            const newNotesRef = await addDoc(subCollectionRef, {
+            const newNotesRef = await setDoc(noteRef, {
                 title: noteTitle,
                 tags: noteTags,
                 content: 'Add your new note..',
                 dateCreated: Date.now(),
                 dateUpdated: Date.now(),
+                id: generatedId,
             })
-            console.log('newNoteRef', newNotesRef.id)
-            const updateWithId = await setDoc(newNotesRef, {
-                id: newNotesRef.id,
-            }, {merge: true})
+             
             console.log('Notes stored successfully.')
             } catch(error){
                 console.error('Error storing note.')
@@ -81,7 +81,9 @@ export default function createNote({addNote, setAddNote}) {
                 onClick={() => {
                     // Setting state to close the modal
                     setAddNote(false);
-                    // Add functionality to clear the inputs in the form on clicking the close button and also clear the tags.
+                    // Add functionality to clear the inputs in the form on clicking the close button and also clear the form
+                    setNoteTitle('');
+                    setNoteTags([]);
                 }}
                 >
                     <i className="fa-sharp fa-regular fa-xmark"></i>
@@ -169,7 +171,11 @@ export default function createNote({addNote, setAddNote}) {
                                 //Once the note title and the tags has been filled and this button is clicked, we will store the note in the database.
                                 if(noteTitle !== '' && noteTags.length > 0) {
                                     storeNote();
+                                    // Setting state to close the modal
                                     setAddNote(false);
+                                    // Add functionality to clear the inputs in the form on clicking the close button and also clear the form
+                                    setNoteTitle('');
+                                    setNoteTags([]);
                                 }
                             }
                         }
