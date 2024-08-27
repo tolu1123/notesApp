@@ -17,7 +17,7 @@
     "description": "This  is a breath taking notes Application that is used for taking notes, and serves a wide range of features, including the ability to take notes, set theme, search functionality,provide security and many more.",
     "display": "standalone",
     "orientation": "portrait-primary",
-    "start_url": "http://localhost:5173",
+    "start_url": "https://notes-app-zeta.vercel.app",
     "screenshots" : [
     {
         "src": "./src/assets/Oneplus-Nord.png",
