@@ -36,7 +36,7 @@
         "platform": "ios"
     },
     {
-        "src": "./src/assets/Macbook-Air.png",
+        "src": "/assets/Macbook-Air.png",
         "sizes": "1433x823",
         "type": "image/png",
         "form_factor": "wide",
