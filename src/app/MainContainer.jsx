@@ -29,31 +29,31 @@ export default function MainContainer({
   const [displayNote, setDisplayNote] = useState(false);
 
   //use effect to monitor size of the screen to handle display Note
-  useEffect(() => {
-    window.addEventListener('resize', () => {
-      if(window.innerWidth > 640){
-        setDisplayNote(true)
-      }else {
-        setDisplayNote(false)
-      }
-    })
+  // useEffect(() => {
+  //   window.addEventListener('resize', () => {
+  //     if(window.innerWidth > 640){
+  //       setDisplayNote(true)
+  //     }else {
+  //       setDisplayNote(false)
+  //     }
+  //   })
 
-    return () => {
-      window.removeEventListener('resize', () => {
-        if(window.innerWidth > 640){
-          setDisplayNote(true)
-        }else {
-          setDisplayNote(false)
-        }
-      })
-    }
-  }
-  , [displayNote])
-  useEffect(() => {
-    if(window.innerWidth > 640){
-      setDisplayNote(true)
-    }
-  }, [displayNote])
+  //   return () => {
+  //     window.removeEventListener('resize', () => {
+  //       if(window.innerWidth > 640){
+  //         setDisplayNote(true)
+  //       }else {
+  //         setDisplayNote(false)
+  //       }
+  //     })
+  //   }
+  // }
+  // , [displayNote])
+  // useEffect(() => {
+  //   if(window.innerWidth > 640){
+  //     setDisplayNote(true)
+  //   }
+  // }, [displayNote])
 
   function outlet() {
     if(notes.length > 0){
