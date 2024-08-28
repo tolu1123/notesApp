@@ -281,7 +281,7 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
 
         <div className="meta-pane p-5 bg-white dark:bg-black">
             <div className="">
-                <div 
+                {/* <div 
                 onClick={() => {
                     setDisplayNote(false)
                     setSelectedNote({})
@@ -289,7 +289,7 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
                 className=' text-black text-base w-10 h-10 dark:text-white sm:hidden'
                 >
                     <i className="fa-sharp fa-regular fa-arrow-left"></i>
-                </div>
+                </div> */}
 
                 <div className="meta-contents text-black dark:text-white">
                     {/* Title of the note */}
