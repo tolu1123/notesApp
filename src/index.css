@@ -193,10 +193,6 @@ body {
 }
 
 
-.editor {
-  height: calc(100vh - 500px) !important;
-}
-
 
 .notSelected {
   background-color: #DEDEDE;
@@ -240,9 +236,7 @@ td:nth-child(2) {
 }
 
 @media (min-width: 768px) {
-  .editor {
-    height: calc(100vh - 240px) !important;
-  }
+   
   .selected {
     background-color: #DEDEDE;
   }

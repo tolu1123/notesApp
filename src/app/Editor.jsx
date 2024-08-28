@@ -477,7 +477,7 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
                                     />
 
                                     {/* The pencil to click when you want to add the tag without clicking the enter button */}
-                                    <span className='absolute right-3 top-1/2 -translate-y-1/2 bg-black rounded-full text-white text-base w-6 h-6 hover:bg-white hover:text-black dark:bg-white dark:text-black shadow-sm shadow-black dark:shadow-white text-center align-middle'
+                                    <span className='absolute right-1 sm:right-3 top-1/2 -translate-y-1/2 bg-black rounded-full text-white text-base w-6 h-6 hover:bg-white hover:text-black dark:bg-white dark:text-black shadow-sm shadow-black dark:shadow-white text-center align-middle'
                                     onClick={
                                         () => {
                                             //I will add the tag to the list of tags but prevent empty strings
