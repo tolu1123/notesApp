@@ -223,6 +223,7 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
         }else {
             setContent(value);
         }
+        console.log('something going wrong!');
     }, 30);
 
     function padString(digit) {

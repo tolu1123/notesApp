@@ -93,9 +93,9 @@ export default function MainContainer({
           searchValue={searchValue}
           setSearchValue={setSearchValue}
         />
-        {/*  */}
+        {/* translate-x-[2000px] hidden */}
 
-        <div className={`secondary bg-white dark:bg-black absolute top-0 transition-all duration-200 ease-linear w-full h-full ${displayNote ? 'translate-x-0':'!sm:translate-x-0 translate-x-[2000px] hidden sm:!block'} z-10 sm:z-[1] !sm:block sm:static  sm:w-3/5 lg:w-2/3 !sm:translate-x-0 sm:h-full`}>
+        <div className={`secondary bg-white dark:bg-black absolute top-0 transition-all duration-200 ease-linear w-full h-full ${displayNote ? 'translate-x-0':'!sm:translate-x-0  sm:!block'} z-10 sm:z-[1] !sm:block sm:static  sm:w-3/5 lg:w-2/3 !sm:translate-x-0 sm:h-full`}>
           {
            outlet()
           }
