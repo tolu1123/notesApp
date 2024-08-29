@@ -178,7 +178,7 @@ export default function ForgotPassword() {
           <div className="sideImage md:hidden w-[70%]">
             <img src={emailSentImg} alt="Email successful image" />
           </div>
-          <h2 className="poppins-semibold text-3xl mb-3">Email sent successfully</h2>
+          <h2 className="poppins-semibold text-center text-3xl mb-3">Email sent successfully</h2>
           <p className="text-center">A mail has been sent to <span className="font-semibold">{email}</span>, this mail contains a link to guide you to reset your forgotten password.</p>
           <button
           ref={resendMail}
