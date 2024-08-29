@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 
 import NoteList from "./NoteList";
 import CreateNotes from "./CreateNotes";
@@ -27,33 +27,48 @@ export default function MainContainer({
   const {notes, setNotes} = useContext(userNotes)
   //The state that holds the boolean whether to display the note or not
   const [displayNote, setDisplayNote] = useState(false);
+  //A reference to the secondary div
+  const secondary = useRef(null);
+  const [secondaryStyle, setSecondaryStyle] = useState('')
+
+  useEffect(() => {
+    if(displayNote) {//We will display the note
+      setSecondaryStyle('translate-x-0')
+    } else {
+      if(window.innerWidth >= 640){//If the screen width is larger or equal to 640px, we will display the note
+        setSecondaryStyle('translate-x-0')
+      }else {
+        setSecondaryStyle('translate-x-full hidden')
+      }
+    }
+  }, [displayNote])
 
   //use effect to monitor size of the screen to handle display Note
-  // useEffect(() => {
-  //   window.addEventListener('resize', () => {
-  //     if(window.innerWidth > 640){
-  //       setDisplayNote(true)
-  //     }else {
-  //       setDisplayNote(false)
-  //     }
-  //   })
+  useEffect(() => {
+    window.addEventListener('resize', () => {
+      if(window.innerWidth >= 640){
+        setDisplayNote(true)
+      }else if(window.innerWidth < 640 && !selectedNote.title){//If the screen width is less than 640px and there is no selected note, we will not display the note
+        setDisplayNote(false)
+      }
+    })
 
-  //   return () => {
-  //     window.removeEventListener('resize', () => {
-  //       if(window.innerWidth > 640){
-  //         setDisplayNote(true)
-  //       }else {
-  //         setDisplayNote(false)
-  //       }
-  //     })
-  //   }
-  // }
-  // , [displayNote])
-  // useEffect(() => {
-  //   if(window.innerWidth > 640){
-  //     setDisplayNote(true)
-  //   }
-  // }, [displayNote])
+    return () => {
+      window.removeEventListener('resize', () => {
+        if(window.innerWidth >= 640){
+          setDisplayNote(true)
+        }else if(window.innerWidth < 640 && !selectedNote.title) {
+          setDisplayNote(false)
+        }
+      })
+    }
+  }
+  , [displayNote])
+  useEffect(() => {
+    if(window.innerWidth >= 640){
+      setDisplayNote(true)
+    }
+  }, [displayNote])
 
   function outlet() {
     if(notes.length > 0){
@@ -95,7 +110,7 @@ export default function MainContainer({
         />
         {/*   */}
 
-        <div className={`secondary bg-white dark:bg-black absolute top-0 transition-all duration-200 ease-linear w-full h-full ${displayNote ? 'translate-x-0':'!sm:translate-x-0 translate-x-[2000px] hidden sm:!block'} z-10 sm:z-[1] !sm:block sm:static  sm:w-3/5 lg:w-2/3 !sm:translate-x-0 sm:h-full`}>
+        <div ref={secondary} className={`secondary bg-white dark:bg-black absolute top-0 transition-all duration-200 ease-linear w-full h-full ${secondaryStyle} z-10 sm:z-[1] !sm:block sm:static  sm:w-3/5 lg:w-2/3 !sm:translate-x-0 sm:h-full`}>
           {
            outlet()
           }

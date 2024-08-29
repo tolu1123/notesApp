@@ -55,7 +55,6 @@ export default function SignUp() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [userExist, setUserExist] = useState(false);
-  const [emailExist, setEmailExist] = useState(false);
   const passwordField = useRef(null);
   const confirmPasswordField = useRef(null);
   const [password, setPassword] = useState(true);
@@ -80,13 +79,9 @@ export default function SignUp() {
     console.log(type, value);
     const val = await crossCheckField(type, value);
     console.log("crossChecker", val);
-    type === "username"
-      ? setUserExist(val)
-      : type === "email"
-      ? setEmailExist(val)
-      : null;
+    //If the user exists we will notify the user that a user exists with the filled-in username
+    type === "username" ? setUserExist(val) : null;
   }
-  console.log(userExist, emailExist, validConfPassword);
 
   async function handleSubmit(e) {
     const formData = new FormData(e.target);
@@ -99,8 +94,7 @@ export default function SignUp() {
       email !== "" &&
       password.length > 6 &&
       confirmPassword === password &&
-      !userExist &&
-      !emailExist
+      !userExist
     ) {
       try {
         // sign up the user
@@ -180,14 +174,6 @@ export default function SignUp() {
                   className="h-10 py-4 px-2 poppins-regular border border-solid border-lessBlack w-full peer focus:outline-none rounded-md text-sm"
                   required
                   onChange={(e) => {
-                    setEmailExist(true);
-                    const elementId = e.target.getAttribute("id");
-                    const elementVal = e.target.value;
-                    async function check() {
-                      await checkField(e, elementId, elementVal);
-                    }
-                    check();
-                    console.log(emailExist);
                   }}
                 />
 
@@ -199,9 +185,6 @@ export default function SignUp() {
                   Email
                 </label>
 
-                {emailExist && (
-                  <div className="text-xs">This email is already in use!</div>
-                )}
               </div>
 
               <div className="passwordField relative mb-5">
@@ -313,7 +296,7 @@ export default function SignUp() {
                   type="submit"
                   // This form will be disabled if the password field is less than 6 or the confirm password field is not equal to the password field
                   // Or if the username or email already exist in the database
-                  disabled={userExist || emailExist || !validConfPassword}
+                  disabled={userExist || !validConfPassword}
                   className="poppins-medium text-white bg-accent-fullBlack w-full py-3 rounded-md hover:bg-accent-lessBlack transition duration-200 ease-linear bg-fullBlack"
                 >
                   Register
