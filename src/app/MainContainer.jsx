@@ -45,25 +45,31 @@ export default function MainContainer({
 
   //use effect to monitor size of the screen to handle display Note
   useEffect(() => {
-    window.addEventListener('resize', () => {
-      if(window.innerWidth >= 640){
-        setDisplayNote(true)
-      }else if(window.innerWidth < 640 && !selectedNote.title){//If the screen width is less than 640px and there is no selected note, we will not display the note
-        setDisplayNote(false)
-      }
-    })
+    const mediaQuery = window.matchMedia("(min-width: 640px)");
 
+    // Function to handle the displayNote state based on screen width
+    const handleScreenResize = (e) => {
+      if (e.matches) {
+        // Screen width is 640px or more
+        setDisplayNote(true);
+      } else if (!selectedNote.title) {
+        // Screen width is less than 640px and no note is selected
+        setDisplayNote(false);
+      }
+    };
+
+    // Initial check
+    handleScreenResize(mediaQuery);
+
+    // Add listener
+    mediaQuery.addEventListener("change", handleScreenResize);
+
+    // Cleanup listener on component unmount
     return () => {
-      window.removeEventListener('resize', () => {
-        if(window.innerWidth >= 640){
-          setDisplayNote(true)
-        }else if(window.innerWidth < 640 && !selectedNote.title) {
-          setDisplayNote(false)
-        }
-      })
-    }
-  }
-  , [displayNote])
+      mediaQuery.removeEventListener("change", handleScreenResize);
+    };
+  }, [selectedNote.title]);
+
   useEffect(() => {
     if(window.innerWidth >= 640){
       setDisplayNote(true)
