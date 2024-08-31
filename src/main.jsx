@@ -16,7 +16,8 @@ import ForgotPassword, {
 } from './routers/forgotPassword';
 
 import CreateNewPassword, {
-  action as createNewPasswordAction
+  action as createNewPasswordAction,
+  loader as urlChecker,
 } from './routers/createNewPassword';
 
 
@@ -48,6 +49,7 @@ const router = createBrowserRouter([
   }, {
     path: 'createNewPassword',
     element: <CreateNewPassword />,
+    loader: urlChecker,
     action: createNewPasswordAction,
   }
 ])

@@ -49,6 +49,7 @@ export async function action({ request, params }) {
       console.log(newUser, 'What is undefined')
       //Here we will send a verification email to the user
       await sendEmailVerification(newUser.user, actionCodeSettings);
+      
 
       //We hide the form-mail element but fades out with a transition
       const formElement = document.querySelector('.form-mail');

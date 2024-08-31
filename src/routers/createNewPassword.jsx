@@ -1,6 +1,6 @@
 import React,{useState, useRef, useEffect} from 'react'
 
-import { Form, useNavigate } from 'react-router-dom';
+import { Form, redirect, useNavigate } from 'react-router-dom';
 import sideImg from "/images/small-team.png";
 import { verifyPasswordResetCode, confirmPasswordReset, signInWithEmailAndPassword, onAuthStateChanged} from "firebase/auth";
 import { auth } from "../auth/firebase";
@@ -9,6 +9,13 @@ import { auth } from "../auth/firebase";
 function getParameterByName(name) {
     const searchParams = new URLSearchParams(window.location.search);
     return searchParams.get(name);
+}
+
+export async function loader() {
+    actionCode = getParameterByName('continueUrl');
+    if(actionCode) {
+        redirect('/');
+    }
 }
 
 export async function  action({request}) {
