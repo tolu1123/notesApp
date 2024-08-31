@@ -17,7 +17,6 @@ export async function  action({request}) {
 
     //Get the action code from the URL
     const actionCode = getParameterByName('oobCode');
-    console.log(actionCode);
 
     async function handleResetPassword(auth, actionCode) {
         // Localize the UI to the selected language as determined by the lang

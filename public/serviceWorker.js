@@ -2,7 +2,7 @@
 
 //Function to add resources to cache onloading
 const addResourcesToCache = async(resources) => {
-    const cache = await caches.open('version1');
+    const cache = await caches.open('version2');
     await cache.addAll(resources);
 }
 
@@ -11,18 +11,28 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         addResourcesToCache([
             //List of the resources to be added to cache.
-            // 'https://site-assets.fontawesome.com/releases/v6.5.2/css/all.css',
-            // 'https://site-assets.fontawesome.com/releases/v6.6.0/css/sharp-duotone-solid.css',
-            // 'https://site-assets.fontawesome.com/releases/v6.6.0/css/sharp-thin.css',
-            // 'https://site-assets.fontawesome.com/releases/v6.6.0/css/sharp-solid.css',
-            // 'https://site-assets.fontawesome.com/releases/v6.6.0/css/sharp-regular.css',
-            // 'https://site-assets.fontawesome.com/releases/v6.6.0/css/sharp-light.css',
             '/index.html',
             '/output.css',
         ])
     )
 })
+// function that will claim and delete old caches
+const deleteCache = async (key) => {
+  await caches.delete(key);
+};
 
+const deleteOldCaches = async () => {
+  const cacheKeepList = ["version2"];
+  const keyList = await caches.keys();
+  const cachesToDelete = keyList.filter((key) => !cacheKeepList.includes(key));
+  await Promise.all(cachesToDelete.map(deleteCache));
+};
+
+async function claimAndDel() {
+  await enableNavigationPreload();
+  await self.clients.claim();
+  await deleteOldCaches();
+}
 
 
 
@@ -33,7 +43,7 @@ const enableNavigationPreload = async () => {
     }
 };
 self.addEventListener("activate", (event) => {
-    event.waitUntil(enableNavigationPreload());
+    event.waitUntil(claimAndDel());
 });
 
 const putInCache = async (request, response) => {

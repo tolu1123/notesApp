@@ -12,9 +12,10 @@ import {
 
 import GithubSignIn from "../auth/GithubSignIn";
 import GoogleSignIn from "../auth/GoogleSignIn";
+import emailSentImg from "/images/emailSent.png"
 
 import { onSnapshot } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, sendEmailVerification} from "firebase/auth";
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -35,11 +36,33 @@ export async function action({ request, params }) {
     try {
       // sign up the user
       // We will receive the user's id when signup is acheived.
-      let newUserId = await signUp(email, password);
+      let newUser = await signUp(email, password);
 
+      const actionCodeSettings = {
+        url: 'https://notes-app-zeta.vercel.app/',
+        handleCodeInApp: false,
+      };
       // store the username and email in the database
-      await storeUsername(username, email, newUserId);
+      await storeUsername(username, email, newUser.user.uid);
       console.log(username, email, password);
+
+      console.log(newUser, 'What is undefined')
+      //Here we will send a verification email to the user
+      await sendEmailVerification(newUser.user, actionCodeSettings);
+
+      //We hide the form-mail element but fades out with a transition
+      const formElement = document.querySelector('.form-mail');
+      const emailSentElement = document.querySelector('.email-sent');
+      //Add an opacity-100 to hide the element
+      formElement.classList.add('opacity-100');
+      formElement.classList.add('-translate-x-[80px]')
+      //After this we will hide the element and display the successfully sent email UI
+      const timeOut = setTimeout(()=> {
+        formElement.classList.add('hidden');
+        emailSentElement.classList.remove('hidden');
+        emailSentElement.classList.remove('translate-x-80px')
+      },105) 
+      
       return null;
     } catch (error) {
       console.log(error);
@@ -62,10 +85,42 @@ export default function SignUp() {
 
   const navigate = useNavigate();
 
+
+  const [username, setUsername] = useState('');
+  const [passwordVal, setPasswordVal] = useState('');
+  const [confPaswordVal, setConfPasswordVal] = useState('');
+  const [emailVal, setEmailVal] = useState('')
+
+  const errorDiv = useRef(null)
+
+
+
   useEffect(() => {
     const unSubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
-        navigate("/");
+        if(user.emailVerified) {
+
+          navigate('/');
+        }else {
+          //We will inform the user to verify his or her mail.
+          console.log('Verify your mail o.')
+          //Set the contents
+          errorDiv.current.textContent = `Please Verify your mail`;
+          //Remove the error colors
+          errorDiv.current.classList.remove('border-red', 'text-red');
+          //Add text and border-color
+          errorDiv.current.classList.add('border-green', 'text-green');
+          //Remove the hidden class to display the error
+          errorDiv.current.classList.remove('hidden')
+          //Set a timeout to later hide the error div
+          setTimeout(() => {
+              errorDiv.current.classList.add('hidden')
+              //Remove the error colors
+              errorDiv.current.classList.remove('border-green', 'text-green');
+              //Add text and border-color
+              errorDiv.current.classList.add('border-red', 'text-red');
+          }, 4000)
+        }
       } else {
         console.log("User is not signed in");
       }
@@ -73,6 +128,7 @@ export default function SignUp() {
 
     return () => unSubscribeAuth();
   }, []);
+
 
   async function checkField(e, type, value) {
     let element = e.target;
@@ -114,18 +170,18 @@ export default function SignUp() {
   return (
     <>
       {/* A div for the errors */}
-      <div className="error-div absolute right-5 top-5 text-red border border-solid rounded-md border-red text-base py-4 px-6 mt-5 hidden">
+      <div ref={errorDiv} className="error-div absolute right-5 top-5 text-red border border-solid rounded-md border-red text-base py-4 px-6 mt-5 hidden">
         
       </div>
 
-      <div className="flex flex-col h-dvh items-center justify-center sm:items-start sm:justify-start">
+      <div className="flex flex-col h-dvh items-center justify-center sm:items-start sm:justify-start ">
         <header className="sm:px-8 sm:pt-10 sm:text-left text-center">
           <h1 className="fake-logo poppins-medium justify-self-start self-start text-fullBlack text-xl md:pb-0">
             NotesApp
           </h1>
         </header>
 
-        <div className="login flex sm:flex-grow flex-col-reverse md:flex-row p-7 justify-center items-center">
+        <div className="form-mail login flex sm:flex-grow flex-col-reverse md:flex-row p-7 justify-center items-center transition-all duration-100 ease-linear">
           <div className="w-full flex flex-col items-center md:justify-center md:items-center md:w-1/2">
             <Form
               method="post"
@@ -141,6 +197,7 @@ export default function SignUp() {
                   name="username"
                   className="h-10 py-4 px-2 poppins-regular border border-solid border-lessBlack w-full peer focus:outline-none rounded-md text-sm"
                   required
+                  value={username}
                   onChange={(e) => {
                     setUserExist(true);
                     const elementId = e.target.getAttribute("id");
@@ -149,7 +206,7 @@ export default function SignUp() {
                       await checkField(e, elementId, elementVal);
                     }
                     check();
-                    console.log(userExist);
+                    setUsername(elementVal);
                   }}
                 />
 
@@ -173,7 +230,9 @@ export default function SignUp() {
                   name="email"
                   className="h-10 py-4 px-2 poppins-regular border border-solid border-lessBlack w-full peer focus:outline-none rounded-md text-sm"
                   required
+                  value={emailVal}
                   onChange={(e) => {
+                    setEmailVal(e.target.value);
                   }}
                 />
 
@@ -195,12 +254,15 @@ export default function SignUp() {
                   className="h-10 py-4 px-2 poppins-regular border border-solid border-lessBlack w-full peer focus:outline-none rounded-md text-sm"
                   required
                   ref={passwordField}
+                  value={passwordVal}
                   onChange={(e) => {
                     setPassword(false);
                     // check if the value of the password field is greater than 6
                     if (e.target.value.length > 6) {
                       setPassword(true);
                     }
+                    setPasswordVal(e.target.value)
+
                   }}
                 />
                 <label
@@ -243,6 +305,7 @@ export default function SignUp() {
                   name="confirmPassword"
                   className="h-10 py-4 px-2 poppins-regular border border-solid border-lessBlack w-full peer focus:outline-none rounded-md text-sm"
                   required
+                  value={confPaswordVal}
                   ref={confirmPasswordField}
                   onChange={(e) => {
                     setValidConfPassword(false);
@@ -253,6 +316,7 @@ export default function SignUp() {
                     ) {
                       setValidConfPassword(true);
                     }
+                    setConfPasswordVal(e.target.value)
                   }}
                 />
                 <label
@@ -330,6 +394,30 @@ export default function SignUp() {
             </div>
           </div>
         </div>
+
+
+        {/* The div that shows email sent */} 
+      <div className="email-sent login flex sm:flex-grow flex-col md:flex-row p-5 hidden translate-x-80px transition-all delay-75 duration-100 ease-linear">
+
+        {/* The image to get displayed */}
+        <div className="flex flex-col items-center justify-center md:w-2/5">
+          <div className="sideImage hidden md:flex w-[70%]">
+            <img src={emailSentImg} alt="Email successful image" />
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center md:justify-center md:items-center w-full md:w-1/2">
+
+          {/* The image to be displayed */}
+          <div className="sideImage md:hidden w-[70%]">
+            <img src={emailSentImg} alt="Email successful image" />
+          </div>
+          <h2 className="poppins-semibold text-center text-3xl mb-3">Verification Email Sent!</h2>
+          <p className="text-center">Account created successfully!!, a mail has been sent to <span className="font-semibold">{emailVal}</span>, this mail contains a link that will redirect you to the application</p>
+        </div>
+
+      </div>
+
       </div>
     </>
   );

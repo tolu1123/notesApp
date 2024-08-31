@@ -77,30 +77,42 @@ export default function Login() {
   // we initialize the navigate hook
   const navigate = useNavigate();
 
-  // we intentionally set the userDoesNotExist variable to a default of false
-  const [userDoesNotExist, setUserDoesNotExist] = useState(false);
 
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
 
   const inputEl = useRef(null);
-
+  const errorDiv = useRef(null);
 
   //This state is used to store the data of a user when a user logins
   // if the user's data has not been stored, we will then store it using the auth listener
   const [user, setUserData] = useState({});
 
-  async function handleInput(type, value) {
-    const foundUser = await crossCheckField(type, value);
-    // negate the passed in response
-    setUserDoesNotExist(!foundUser);
-    console.log(foundUser);
-  }
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        navigate("/");
+        if(user.emailVerified) {
+          navigate('/');
+        }else {
+          //We will inform the user to verify his or her mail.
+          //Set the contents
+          errorDiv.current.textContent = `Please Verify your mail`;
+          //Remove the error colors
+          errorDiv.current.classList.remove('border-red', 'text-red');
+          //Add text and border-color
+          errorDiv.current.classList.add('border-green', 'text-green');
+          //Remove the hidden class to display the error
+          errorDiv.current.classList.remove('hidden')
+          //Set a timeout to later hide the error div
+          setTimeout(() => {
+              errorDiv.current.classList.add('hidden')
+              //Remove the error colors
+              errorDiv.current.classList.remove('border-green', 'text-green');
+              //Add text and border-color
+              errorDiv.current.classList.add('border-red', 'text-red');
+          }, 4000)
+        }
       } else {
         console.log("user not signed in!");
       }
@@ -110,7 +122,7 @@ export default function Login() {
   return (
     <>
       {/* A div for the errors */}
-      <div className="error-div absolute right-5 top-5 text-red border border-solid rounded-md border-red text-base py-4 px-6 mt-5 hidden">
+      <div ref={errorDiv} className="error-div absolute right-5 top-5 text-red border border-solid rounded-md border-red text-base py-4 px-6 mt-5 hidden">
         
       </div>
 
@@ -143,11 +155,7 @@ export default function Login() {
                   className="h-10 py-4 px-2 poppins-regular border border-solid border-lessBlack w-full peer focus:outline-none rounded-md"
                   required
                   onChange={(e) => {
-                    e.preventDefault;
-                    const id = e.target.getAttribute("id");
-                    const value = e.target.value;
-                    setUserDoesNotExist(true);
-                    handleInput(id, value);
+                     
                   }}
                 />
 
@@ -158,11 +166,6 @@ export default function Login() {
                 >
                   Username
                 </label>
-
-                {/* our default error*/}
-                {userDoesNotExist && (
-                  <div className="text-xs text-red">This username does not exist</div>
-                )}
               </div>
 
               <div className="passwordField relative mb-4">

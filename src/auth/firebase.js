@@ -77,10 +77,10 @@ export const userRef = collection(db, 'users')
 //     })
 // });
 // The following line connects me to my emulator
-// connectAuthEmulator(auth, 'http://localhost:9099');
-// connectFirestoreEmulator(db, '127.0.0.1', 8080);
-// const functions = getFunctions(getApp());
-// connectFunctionsEmulator(functions, "127.0.0.1", 5001);
+connectAuthEmulator(auth, 'http://localhost:9099');
+connectFirestoreEmulator(db, '127.0.0.1', 8080);
+const functions = getFunctions(getApp());
+connectFunctionsEmulator(functions, "127.0.0.1", 5001);
 
 // update the firestore settings
 // db.settings({timestampsInSnapshots: true});
@@ -91,7 +91,7 @@ export async function signUp(email, password) {
         const newUserId = newUser.user.uid;
         console.log('This is the logged in-user id',newUserId, newUser.user);
         // Return the user's id that will be used for creating the user's database
-        return newUserId
+        return newUser
     } catch(error) {
         const errorCode = error.code;
         //Display the corresponding error to the user based on the error codes

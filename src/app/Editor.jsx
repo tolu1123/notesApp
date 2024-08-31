@@ -28,6 +28,8 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
     const [noteTitle, setNoteTitle] = useState(null);
     const [noteTags, setNoteTags] = useState(selectedNote.tags);
 
+    //State for edit and preview
+    const [viewMode, setViewMode] = useState('preview')
     const titleRef = useRef(null); 
     const inputRef = useRef(null);
 
@@ -44,7 +46,37 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
         })
     
         return () => userAuth()
-      })
+    })
+
+    useEffect(() => {
+        //Replace the edit and preview subicons
+        const edit = document.querySelector('button[data-name="edit"]');
+        edit.textContent = 'Edit note';
+        const preview = document.querySelector('button[data-name="preview"]');
+        preview.textContent = 'Preview Note';
+
+        const editFun = () => setViewMode('edit');
+        const previewFun = () => setViewMode('preview');
+
+        
+        edit.classList.add('hidden', '!text-[#0969da]', '!bg-[rgba(175,184,173,0.2)]');
+        preview.classList.add('!text-[#0969da]', '!bg-[rgba(175,184,173,0.2)]');
+
+        edit.addEventListener('click', editFun);
+        preview.addEventListener('click', previewFun);
+
+        if(viewMode === 'edit'){
+            //Hide the edit button
+            edit.classList.add('hidden');
+            preview.classList.remove('hidden');
+        }else {
+            //Viewmode will be preview
+            //So we hide the preview button
+            preview.classList.add('hidden');
+            edit.classList.remove('hidden');
+        }
+
+    }, [viewMode])
 
     useEffect(() => {
         //We sync offline data with online data
@@ -99,7 +131,6 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
             //Explicit usage of the note we already set
             offlineData.notes = notes;
             localStorage.setItem('offlineData', JSON.stringify(offlineData));
-            console.log('Is this not working.')
         }else {
             //We could not find the offlineData, so we will set it explicitly
             localStorage.setItem('offlineData', JSON.stringify({
@@ -182,10 +213,6 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
         }
     };
 
-    useEffect(() => {
-        console.log('Note state changed', notes)
-    }, [notes]);
-
     const [content, setContent] = useState(selectedNote.content);
 
     useEffect(() => {
@@ -194,25 +221,26 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
 
     }, [selectedNote.content])
 
-    // const currentNote = notes.find(note => note.id === selectedNote.id)
-    console.log(selectedNote, 'This is notes')
 
     const [flag, setFlag] = useState(0);
     useEffect(() => {
-        //Update the selected note content if the value changes
-        setSelectedNote(prevState => {
-            let updatedContent = {...prevState,
-                content: content,
-                dateUpdated: Date.now(),
-            }
+        //Conditional check to prevent automatic update on viewing.
+        if (flag !== 0) {
+            //Update the selected note content if the value changes
+            setSelectedNote(prevState => {
+                let updatedContent = {...prevState,
+                    content: content,
+                    dateUpdated: Date.now(),
+                }
 
-            
-            setTimeout(() => {
-                updateDocument(updatedContent)
-            }, 500)
+                
+                setTimeout(() => {
+                    updateDocument(updatedContent)
+                }, 500)
 
-            return updatedContent;
-        })
+                return updatedContent;
+            })
+        }
     }, [flag])
     
 
@@ -223,7 +251,6 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
         }else {
             setContent(value);
         }
-        console.log('something going wrong!');
     }, 30);
 
     function padString(digit) {
@@ -309,7 +336,9 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
                         {/* Span element to delete */}
                         <span
                             className='cursor-pointer text-sm'
-                            onClick={handleDelete}
+                            onClick={() => {
+                                handleDelete()
+                            }}
                         >
                             <i className="fa-light fa-trash-can"></i>
                         </span>
@@ -378,7 +407,7 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
         <MDEditor
         value={content}
         onChange={(value) => {saveContent(value)}}
-        preview='edit'
+        preview='preview'
         height='100%'
         overflow={false}
         className='editor !h-full bg-white dark:bg-black wmde-markdown-var !flex-grow'

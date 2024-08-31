@@ -7,9 +7,6 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../auth/firebase";
 
 
-// import the profile picture
-import profilePic from "/images/profilePic.jpg";
-
 export default function Header({
   mobileInput,
   mobileSearchInput,
@@ -29,6 +26,10 @@ export default function Header({
 
   const profileRef = useRef(null);
   const [selectedImg, setSelectedImg] = useState(0);
+  const [updatingPic, setUpdatingPic] = useState(false);
+  
+  const uploadInfoEle = useRef(null);
+  const imgCont = useRef(null);
 
   
 
@@ -41,39 +42,63 @@ export default function Header({
   }
 
   
-
   useEffect(() => {
-    if(selectedImg) {
-      const url = 'https://api.cloudinary.com/v1_1/drlrawk5w/image/upload';
-      const file = profileRef.current.files[0];
+    if (selectedImg) {
+        const url = 'https://api.cloudinary.com/v1_1/drlrawk5w/image/upload';
+        const file = profileRef.current.files[0];
 
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', 'notesApplication');
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', 'notesApplication');
 
-      fetch(url, {
-        method: 'POST',
-        body: formData,
-      })
+        // We set the updating pic to true
+        setUpdatingPic(true);
+
+        //We optimistically update the profile picture
+        const formerURL = userData.profilePic;
+        const newPicUrl = URL.createObjectURL(file);
+        setUserData(prevState => ({...prevState, profilePic: newPicUrl}))
+        
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+        })
         .then((response) => {
-          return response.json();
+             
+            return response.json()
         })
         .then((data) => {
-          
-          console.log(data.url, 'Returned from cloudinary');
-          //Update the selected note content if the value changes
-          setUserData(prevState => {
-            let updatedContent = {...prevState,
-              profilePic: data.url,
-            }
-            // The function to update the user data in firebase
-            updateUserData(updatedContent)
+            console.log(data, 'Returned from Cloudinary');
+            setUserData(prevState => {
+                let updatedContent = { ...prevState, profilePic: data.url };
+                updateUserData(updatedContent);
 
-            return updatedContent;
-          });
+                return updatedContent;
+            });
+            //We then revoke the object URL
+            URL.revokeObjectURL(newPicUrl);
+            //We set the updating pic to false
+            setUpdatingPic(false);
+        })
+        .catch((error) => {
+            //We revert the profile picture to the former one
+            setUserData(prevState => ({...prevState, profilePic: formerURL}))
+            //We then revoke the object URL
+            URL.revokeObjectURL(newPicUrl);
+            //We inform the user that the upload failed
+            uploadInfoEle.current.textContent = 'Upload failed';
+            uploadInfoEle.current.classList.add('text-red');
+            //We create a timeout such that after 4seconds the upload failed message will disappear and we will return the uploadInfoEle's textContent to its former content
+            setTimeout(() => {
+              setUpdatingPic(false);
+              uploadInfoEle.current.textContent('Uploading profile picture...');
+              uploadInfoEle.current.classList.remove('text-red');
+            }, 4000);
+            console.error('Error uploading image:', error);
         });
     }
-  }, [selectedImg])
+}, [selectedImg]);
+
 
   console.log('userData',userData)
 
@@ -111,7 +136,7 @@ export default function Header({
         >
           <div>
             <img
-              src={userData?.profilePic || profilePic}
+              src={userData?.profilePic}
               alt=""
               className="hamburger block src w-8 h-8 object-top object-cover rounded-full"
               ref={hamburger}
@@ -150,9 +175,9 @@ export default function Header({
                 {/* The li tag that contains the profile picture and the account holder details */}
                 <li className="flex flex-col items-center justify-center pt-5 pb-2">
                   {/* Div for the profile picture */}
-                  <div className="mb-1">
+                  <div ref={imgCont} className="mb-1 p-0.5 rounded-full">
                     <img
-                      src={userData?.profilePic || profilePic}
+                      src={userData?.profilePic}
                       className="block w-10 h-10 object-top object-cover rounded-full"
                       alt=""
                     />
@@ -168,7 +193,7 @@ export default function Header({
 
 
                   {/* Section to change profile picture */}
-                  <form className="px-4 py-2" method="post" encType="multipart/form-data">
+                  <form className="px-4 py-2 relative" method="post" encType="multipart/form-data">
                     <input 
                     type="file" 
                     className="hidden" 
@@ -182,15 +207,18 @@ export default function Header({
                     <span className="text-lg mr-2">
                       <i className="fa-light fa-user"></i>
                     </span>
-                    <input onClick={(e) => {
+                    <input className="cursor-pointer" onClick={(e) => {
                       e.preventDefault();
                       profileRef.current.click();
                       
                     }} type="submit" value="Change profile picture" name="submit" />
+                    {updatingPic && <div ref={uploadInfoEle} className="absolute w-full inset-0 backdrop-opacity-50 bg-black/70 text-white dark:bg-white/55 dark:text-black dark:font-bold flex items-center justify-center text-xs">
+                      Uploading profile picture...
+                    </div>}
                   </form>
 
                   {/* Creating toggle for DarkMode */}
-                  <div className="flex flex-row items-center justify-center gap-2 py-1">
+                  <div className="flex flex-row items-center justify-center gap-2 py-1 cursor-pointer">
                     {/*  */}
                     <span className="text-lg">
                       <i className="fa-light fa-sun-bright"></i>
@@ -250,7 +278,7 @@ export default function Header({
 
                 {/* The Signout button */}
                 <li
-                  className="flex flex-nowrap items-center px-4 py-2"
+                  className="flex flex-nowrap items-center px-4 py-2 cursor-pointer"
                   onClick={() => {
                     handleSignOut();
                   }}

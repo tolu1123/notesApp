@@ -1,9 +1,10 @@
-import React,{useState,useRef, useContext} from "react";
+import React,{useState,useRef,useEffect, useContext} from "react";
 import ReactDOM from "react-dom/client"
 import {doc,addDoc,setDoc, collection} from 'firebase/firestore'
 import {auth,db} from '../auth/firebase'
 import { userContext } from "../contexts/userContext";
-import { updatePassword } from "firebase/auth";
+import {userNotes} from '../contexts/notesContext';
+
 //Import nanoid for creating unique ids
 import { nanoid } from 'nanoid'
 
@@ -12,12 +13,20 @@ export default function createNote({addNote, setAddNote}) {
 
     //The context to get the details of the user
     const {userData,setUserData} = useContext(userContext);
+    //The context to get the other notes of the user to populate the noteTags
+    const {notes, setNotes} = useContext(userNotes);
     
-
+    //Using the reduce method to retrieve the tags in the already created notes
+    let suggestedTags = notes.reduce((acc, ele, _) => {
+        return [...new Set([...acc, ...ele.tags])];
+    }, [])
     // The state for controlling the addNote input
     const [noteTitle, setNoteTitle] = useState('');
-    const [noteTags, setNoteTags] = useState([]);
-
+    //We initialize with the suggested notes as a start
+    const [noteTags, setNoteTags] = useState(suggestedTags);
+    useEffect(() => {
+        setNoteTags(suggestedTags);
+    }, [notes])
     const inputRef = useRef(null)
 
 
@@ -83,7 +92,6 @@ export default function createNote({addNote, setAddNote}) {
                     setAddNote(false);
                     // Add functionality to clear the inputs in the form on clicking the close button and also clear the form
                     setNoteTitle('');
-                    setNoteTags([]);
                 }}
                 >
                     <i className="fa-sharp fa-regular fa-xmark"></i>
@@ -157,7 +165,7 @@ export default function createNote({addNote, setAddNote}) {
                                             }
                                         }
                                     }>
-                                        <i class="fa-sharp fa-regular fa-plus"></i>
+                                        <i className="fa-sharp fa-regular fa-plus"></i>
                                     </span>
                                 </div>
 
@@ -175,7 +183,6 @@ export default function createNote({addNote, setAddNote}) {
                                     setAddNote(false);
                                     // Add functionality to clear the inputs in the form on clicking the close button and also clear the form
                                     setNoteTitle('');
-                                    setNoteTags([]);
                                 }
                             }
                         }

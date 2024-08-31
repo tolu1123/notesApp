@@ -13,7 +13,7 @@ import {userContext} from '../contexts/userContext'
 import {userNotes} from '../contexts/notesContext'
 import {themeContext} from '../contexts/themeContext'
 
-import { doc, collection, onSnapshot, enableNetwork, disableNetwork, query, where} from "firebase/firestore";
+import { doc, collection, onSnapshot, query, where} from "firebase/firestore";
 
 //A package for determining true internet connectivity
 // import isOnline from 'is-online';
@@ -30,7 +30,7 @@ function NotesApp() {
   const [userId, setUserId] = useState('');
 
   loader = onAuthStateChanged(auth, (user) => {
-    if (!user) {
+    if (!user.emailVerified || !user) {
       navigate("/login");
     }
     // Add a functionality to check the current state of the darkmode theme and reconcile if there is a conflict with local storage.
@@ -51,6 +51,19 @@ function NotesApp() {
   //State to force update of outlet function
   const [forceChange, setForceChange] = useState(0);
 
+  const [refreshedState, setRefreshedState] = useState(
+    () => localStorage.getItem("refreshedState") === "true"
+  );
+
+  useEffect(() => {
+    if (refreshedState === false) {
+      // We reload the page on first entry to ensure all our networks made are cached for offline navigation.
+      window.location.reload();
+      // Store the state in localStorage so that it persists across reloads
+      localStorage.setItem("refreshedState", "true");
+      setRefreshedState(true);
+    }
+  }, [refreshedState]);
 
   useEffect(() => {
     //Set the dark-color-mode of the html element.
@@ -110,7 +123,6 @@ function NotesApp() {
                 // Do something here
                 notes.push(doc.data())
               }
-            
         })
         //We sort the note chronoligically(last updated note at the top of the note)
         notes.sort((a, b) => b.dateUpdated - a.dateUpdated);
