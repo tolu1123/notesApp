@@ -15,10 +15,6 @@ import {themeContext} from '../contexts/themeContext'
 
 import { doc, collection, onSnapshot, query, where} from "firebase/firestore";
 
-//A package for determining true internet connectivity
-// import isOnline from 'is-online';
-// const currentUser = auth.currentUser;
-
 
 
 let loader;

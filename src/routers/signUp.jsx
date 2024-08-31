@@ -100,7 +100,6 @@ export default function SignUp() {
     const unSubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
         if(user.emailVerified) {
-
           navigate('/');
         }else {
           //We will inform the user to verify his or her mail.
@@ -378,7 +377,7 @@ export default function SignUp() {
                 <p className="poppins-light text-gray text-sm">
                   Already have an Account ? &nbsp;
                   <Link
-                    to=".."
+                    to="/login"
                     relative="path"
                     className="poppins-bold text-fullBlack"
                   >

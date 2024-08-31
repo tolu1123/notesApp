@@ -92,9 +92,10 @@ export default function Login() {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        if(user.emailVerified) {
+        if(user.emailVerified ) {
           navigate('/');
         }else {
+          navigate('/login')
           //We will inform the user to verify his or her mail.
           //Set the contents
           errorDiv.current.textContent = `Please Verify your mail`;
