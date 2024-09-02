@@ -67,7 +67,7 @@ function NotesApp() {
         await applyActionCode(auth, actionCode);
         console.log('Email verified successfully');
         // You might want to navigate somewhere else after email verification
-        //navigate('/emailVerified'); // Example: redirect to an email verified page
+        navigate('/'); // Example: redirect to an email verified page
       }
     };
 
