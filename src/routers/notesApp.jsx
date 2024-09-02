@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useContext } from "react";
 import ReactDOM from "react-dom/client";
 import { useNavigate } from "react-router-dom";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { applyActionCode, onAuthStateChanged, signOut } from "firebase/auth";
 
 import "../output.css";
 
@@ -15,9 +15,25 @@ import {themeContext} from '../contexts/themeContext'
 
 import { doc, collection, onSnapshot, query, where} from "firebase/firestore";
 
+// Function to get parameter
+function getParameterByName(name) {
+  const searchParams = new URLSearchParams(window.location.search);
+  return searchParams.get(name);
+}
 
-
-let loader;
+async function loader() {
+  const mode = getParameterByName('mode');
+  if(mode === 'resetPassword') {
+    const searchParam = new URL(window.location.href).search;
+    return redirect(`/createNewPassword${searchParam}`);
+  }else if (mode === 'verifyEmail') {
+    //If the mode is to verify the mail, we will apply the action code
+    const actionCode = getParameterByName('oobCode');
+    await applyActionCode(auth, actionCode);
+    console.log('Email verified successfully')
+  }
+  return null
+}
 
 
 function NotesApp() {

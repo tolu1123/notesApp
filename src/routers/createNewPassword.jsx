@@ -11,17 +11,6 @@ function getParameterByName(name) {
     return searchParams.get(name);
 }
 
-export async function loader() {
-    const searchParams = new URLSearchParams(window.location.search);
-    const isContinueUrl = searchParams.has('continueUrl'); 
-    if(isContinueUrl) {
-        console.log('We are going to be redirected!')
-        return redirect('/');
-    }
-    console.log(searchParams.has('continueUrl'), 'Yes we are there')
-    return null
-}
-
 export async function  action({request}) {
     const formData = await request.formData();
     const {password, confirmPassword} = Object.fromEntries(formData);

@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 
-import { useNavigate, Link, Form } from "react-router-dom";
+import { useNavigate, Link, Form, redirect } from "react-router-dom";
 
 import {
   signUp,
@@ -12,7 +12,7 @@ import {
 
 import GithubSignIn from "../auth/GithubSignIn";
 import GoogleSignIn from "../auth/GoogleSignIn";
-import emailSentImg from "/images/emailSent.png"
+
 
 import { onSnapshot } from "firebase/firestore";
 import { onAuthStateChanged, sendEmailVerification} from "firebase/auth";
@@ -38,33 +38,15 @@ export async function action({ request, params }) {
       // We will receive the user's id when signup is acheived.
       let newUser = await signUp(email, password);
 
-      const actionCodeSettings = {
-        url: 'https://notes-app-zeta.vercel.app/',
-        handleCodeInApp: false,
-      };
       // store the username and email in the database
       await storeUsername(username, email, newUser.user.uid);
       console.log(username, email, password);
 
       console.log(newUser, 'What is undefined')
       //Here we will send a verification email to the user
-      await sendEmailVerification(newUser.user, actionCodeSettings);
-      
+      await sendEmailVerification(newUser.user);
 
-      //We hide the form-mail element but fades out with a transition
-      const formElement = document.querySelector('.form-mail');
-      const emailSentElement = document.querySelector('.email-sent');
-      //Add an opacity-100 to hide the element
-      formElement.classList.add('opacity-100');
-      formElement.classList.add('-translate-x-[80px]')
-      //After this we will hide the element and display the successfully sent email UI
-      const timeOut = setTimeout(()=> {
-        formElement.classList.add('hidden');
-        emailSentElement.classList.remove('hidden');
-        emailSentElement.classList.remove('translate-x-80px')
-      },105) 
-      
-      return null;
+      return redirect(`/account-registered?email=${email}`);
     } catch (error) {
       console.log(error);
       return 'error'
@@ -139,34 +121,6 @@ export default function SignUp() {
     type === "username" ? setUserExist(val) : null;
   }
 
-  async function handleSubmit(e) {
-    const formData = new FormData(e.target);
-    console.log(formData);
-    const { username, email, password, confirmPassword } =
-      Object.fromEntries(formData);
-
-    if (
-      username !== "" &&
-      email !== "" &&
-      password.length > 6 &&
-      confirmPassword === password &&
-      !userExist
-    ) {
-      try {
-        // sign up the user
-        // We will receive the user's id when signup is acheived.
-        let newUserId = await signUp(email, password);
-
-        // store the username and email in the database
-        await storeUsername(username, email, newUserId);
-        console.log(username, email, password);
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      // Fill all fields.
-    }
-  }
   return (
     <>
       {/* A div for the errors */}
@@ -394,29 +348,6 @@ export default function SignUp() {
             </div>
           </div>
         </div>
-
-
-        {/* The div that shows email sent */} 
-      <div className="email-sent login flex sm:flex-grow flex-col md:flex-row p-5 hidden translate-x-80px transition-all delay-75 duration-100 ease-linear">
-
-        {/* The image to get displayed */}
-        <div className="flex flex-col items-center justify-center md:w-2/5">
-          <div className="sideImage hidden md:flex w-[70%]">
-            <img src={emailSentImg} alt="Email successful image" />
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center md:justify-center md:items-center w-full md:w-1/2">
-
-          {/* The image to be displayed */}
-          <div className="sideImage md:hidden w-[70%]">
-            <img src={emailSentImg} alt="Email successful image" />
-          </div>
-          <h2 className="poppins-semibold text-center text-3xl mb-3">Verification Email Sent!</h2>
-          <p className="text-center">Account created successfully!!, a mail has been sent to <span className="font-semibold">{emailVal}</span>, this mail contains a link that will redirect you to the application</p>
-        </div>
-
-      </div>
 
       </div>
     </>

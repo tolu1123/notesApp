@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom/client'
 import './output.css'
-import {NotesApp} from './routers/notesApp';
+import {NotesApp,
+  loader as urlChecker,
+} from './routers/notesApp';
 
 import Login, {
   action as loginAction
@@ -17,8 +19,9 @@ import ForgotPassword, {
 
 import CreateNewPassword, {
   action as createNewPasswordAction,
-  loader as urlChecker,
 } from './routers/createNewPassword';
+
+import AccountRegistered from './routers/accountRegistered';
 
 
 import{
@@ -31,6 +34,7 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <NotesApp />,
+    loader: urlChecker,
     errorElement: <h1>404 Not Found</h1>
   },
   {
@@ -48,8 +52,10 @@ const router = createBrowserRouter([
   }, {
     path: 'createNewPassword',
     element: <CreateNewPassword />,
-    loader: urlChecker,
     action: createNewPasswordAction,
+  }, {
+    path: 'account-registered',
+    element: <AccountRegistered />
   }
 ])
 
