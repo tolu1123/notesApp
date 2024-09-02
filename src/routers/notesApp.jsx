@@ -54,32 +54,48 @@ function NotesApp() {
   //   }
   //   loader();
   // }, [])
-  useEffect(() => {
-    const handleRouting = async () => {
-      const mode = getParameterByName('mode');
-      const searchParam = location.search;
+  // useEffect(() => {
+  //   const handleRouting = async () => {
+  //     const mode = getParameterByName('mode');
+  //     const searchParam = location.search;
 
-      if (mode === 'resetPassword') {
-        console.log('Routing to create new password');
-        navigate(`/createNewPassword${searchParam}`);
-      } else if (mode === 'verifyEmail') {
+  //     if (mode === 'resetPassword') {
+  //       console.log('Routing to create new password');
+  //       navigate(`/createNewPassword${searchParam}`);
+  //     } else if (mode === 'verifyEmail') {
+  //       const actionCode = getParameterByName('oobCode');
+  //       await applyActionCode(auth, actionCode);
+  //       console.log('Email verified successfully');
+  //       setTimeout(() => {
+  //         //We make a delay
+  //       }, 2000)
+  //       // You might want to navigate somewhere else after email verification
+  //       navigate('/'); // Example: redirect to an email verified page
+  //     }
+  //   };
+
+  //   handleRouting();
+  // }, [location, navigate]);
+
+  useEffect(() => {
+    const mode = getParameterByName('mode');
+    const searchParam = location.search;
+
+    const unsub = onAuthStateChanged(auth, async(user) => {
+      if(!user.emailVerified || !user) {
+        navigate("/login");
+      }else if (mode === 'verifyEmail') {
         const actionCode = getParameterByName('oobCode');
         await applyActionCode(auth, actionCode);
         console.log('Email verified successfully');
+        setTimeout(() => {
+          //We make a delay
+        }, 2000)
         // You might want to navigate somewhere else after email verification
         navigate('/'); // Example: redirect to an email verified page
-      }
-    };
-
-    handleRouting();
-  }, [location, navigate]);
-
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if(user) {
-        if (!user.emailVerified || !user) {
-          navigate("/login");
-        }
+      }else if (mode === 'resetPassword') {
+        console.log('Routing to create new password');
+        navigate(`/createNewPassword${searchParam}`);
       }else {
         console.log('we go back to login')
         navigate("/login");
@@ -87,7 +103,7 @@ function NotesApp() {
     });
 
     return () => unsub();
-  }, [])
+  }, [location, navigate])
   //The state for dark theme
   const [darkTheme, setDarkTheme] = useState(JSON.parse(localStorage.getItem('darkTheme')) || false);
 
