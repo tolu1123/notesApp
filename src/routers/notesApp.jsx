@@ -28,31 +28,51 @@ let loader = () => {
 
 function NotesApp() {
   const navigate = useNavigate();
+  const location = useLocation();
   
   const [userId, setUserId] = useState('');
 
+  // useEffect(() => {
+  //   console.log('loader taking over')
+  //   const loader = async () => {
+  //     const mode = getParameterByName('mode');
+  //     if(mode === 'resetPassword') {
+  //       console.log('The need to route to create new password')
+  //       const location = useLocation();
+  //       const searchParam = new URL(location).search;
+  //       console.log(location, searchParam)
+  //       return <Redirect to={`/createNewPassword${searchParam}`} />;
+  //     }else if (mode === 'verifyEmail') {
+  //       //If the mode is to verify the mail, we will apply the action code
+  //       const actionCode = getParameterByName('oobCode');
+  //       await applyActionCode(auth, actionCode);
+  //       console.log('Email verified successfully')
+  //       return true;
+  //     } else {
+  //       return null;
+  //     }
+  //   }
+  //   loader();
+  // }, [])
   useEffect(() => {
-    console.log('loader taking over')
-    const loader = async () => {
+    const handleRouting = async () => {
       const mode = getParameterByName('mode');
-      if(mode === 'resetPassword') {
-        console.log('The need to route to create new password')
-        const location = useLocation();
-        const searchParam = new URL(location).search;
-        console.log(location, searchParam)
-        return <Redirect to={`/createNewPassword${searchParam}`} />;
-      }else if (mode === 'verifyEmail') {
-        //If the mode is to verify the mail, we will apply the action code
+      const searchParam = location.search;
+
+      if (mode === 'resetPassword') {
+        console.log('Routing to create new password');
+        navigate(`/createNewPassword${searchParam}`);
+      } else if (mode === 'verifyEmail') {
         const actionCode = getParameterByName('oobCode');
         await applyActionCode(auth, actionCode);
-        console.log('Email verified successfully')
-        return true;
-      } else {
-        return null;
+        console.log('Email verified successfully');
+        // You might want to navigate somewhere else after email verification
+        //navigate('/emailVerified'); // Example: redirect to an email verified page
       }
-    }
-    loader();
-  }, [])
+    };
+
+    handleRouting();
+  }, [location, navigate]);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
