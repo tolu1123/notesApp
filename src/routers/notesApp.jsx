@@ -76,15 +76,18 @@ function NotesApp() {
 
   //   handleRouting();
   // }, [location, navigate]);
+  const verifyCode = async () => {
+    const actionCode = getParameterByName('oobCode');
+    await applyActionCode(auth, actionCode);
+  }
 
   useEffect(() => {
     const mode = getParameterByName('mode');
     const searchParam = location.search;
 
-    const unsub = onAuthStateChanged(auth, async(user) => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
       if (mode === 'verifyEmail') {
-        const actionCode = getParameterByName('oobCode');
-        await applyActionCode(auth, actionCode);
+        await verifyCode()
         console.log('Email verified successfully');
         setTimeout(() => {
           //We make a delay
@@ -94,9 +97,13 @@ function NotesApp() {
       }else if (mode === 'resetPassword') {
         console.log('Routing to create new password');
         navigate(`/createNewPassword${searchParam}`);
-      }else if(!emailVerified || !user) {
+      }else if(!user.emailVerified) {
         console.log('we go back to login')
         navigate("/login");
+      }
+
+      if(!user) {
+        navigate("/login")
       }
     });
 
