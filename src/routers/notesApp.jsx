@@ -21,21 +21,8 @@ function getParameterByName(name) {
   return searchParams.get(name);
 }
 
-async function loader() {
-  console.log('loader taking over')
-  const mode = getParameterByName('mode');
-  if(mode === 'resetPassword') {
-    const searchParam = new URL(window.location.href).search;
-    return redirect(`/createNewPassword${searchParam}`);
-  }else if (mode === 'verifyEmail') {
-    //If the mode is to verify the mail, we will apply the action code
-    const actionCode = getParameterByName('oobCode');
-    await applyActionCode(auth, actionCode);
-    console.log('Email verified successfully')
-    return true;
-  } else {
-    return null;
-  }
+let loader = () => {
+  return true;
 }
 
 
@@ -43,6 +30,23 @@ function NotesApp() {
   const navigate = useNavigate();
   
   const [userId, setUserId] = useState('');
+
+  useEffect(async() => {
+    console.log('loader taking over')
+    const mode = getParameterByName('mode');
+    if(mode === 'resetPassword') {
+      const searchParam = new URL(window.location.href).search;
+      return redirect(`/createNewPassword${searchParam}`);
+    }else if (mode === 'verifyEmail') {
+      //If the mode is to verify the mail, we will apply the action code
+      const actionCode = getParameterByName('oobCode');
+      await applyActionCode(auth, actionCode);
+      console.log('Email verified successfully')
+      return true;
+    } else {
+      return null;
+    }
+  }, [])
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
