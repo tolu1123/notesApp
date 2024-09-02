@@ -3,12 +3,12 @@
     "short_name": "NotesApp",
     "icons": [
     {
-        "src": "./src/assets/NotesApp-icon-sm.png",
+        "src": "/assets/NotesApp-icon-sm.png",
         "sizes": "192x192",
         "type": "image/png"
     },
     {
-        "src": "./src/assets/NotesApp-icon-lg.png",
+        "src": "/assets/NotesApp-icon-lg.png",
         "sizes": "512x512",
         "type": "image/png"
     }
@@ -17,10 +17,10 @@
     "description": "This  is a breath taking notes Application that is used for taking notes, and serves a wide range of features, including the ability to take notes, set theme, search functionality,provide security and many more.",
     "display": "standalone",
     "orientation": "portrait-primary",
-    "start_url": "https://notes-app-zeta.vercel.app",
+    "start_url": "/",
     "screenshots" : [
     {
-        "src": "./src/assets/Oneplus-Nord.png",
+        "src": "/assets/Oneplus-Nord.png",
         "sizes": "417x903",
         "type": "image/png",
         "form_factor": "narrow",
@@ -28,7 +28,7 @@
         "platform": "android"
     },
     {
-        "src": "./src/assets/iPhone-13-PRO-MAX.png",
+        "src": "/assets/iPhone-13-PRO-MAX.png",
         "sizes": "456x920",
         "type": "image/png",
         "form_factor": "narrow",
@@ -36,7 +36,7 @@
         "platform": "ios"
     },
     {
-        "src": "./src/assets/Macbook-Air.png",
+        "src": "/assets/Macbook-Air.png",
         "sizes": "1433x823",
         "type": "image/png",
         "form_factor": "wide",
