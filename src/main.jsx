@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom/client'
 import './output.css'
-import {NotesApp, loader as AuthChecker} from './routers/notesApp';
+import {NotesApp} from './routers/notesApp';
 
 import Login, {
   action as loginAction
@@ -31,8 +31,7 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <NotesApp />,
-    errorElement: <h1>404 Not Found</h1>,
-    loader: AuthChecker,
+    errorElement: <h1>404 Not Found</h1>
   },
   {
     path: 'login',

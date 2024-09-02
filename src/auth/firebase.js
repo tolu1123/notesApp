@@ -77,10 +77,10 @@ export const userRef = collection(db, 'users')
 //     })
 // });
 // The following line connects me to my emulator
-// connectAuthEmulator(auth, 'http://localhost:9099');
-// connectFirestoreEmulator(db, '127.0.0.1', 8080);
-// const functions = getFunctions(getApp());
-// connectFunctionsEmulator(functions, "127.0.0.1", 5001);
+connectAuthEmulator(auth, 'http://localhost:9099');
+connectFirestoreEmulator(db, '127.0.0.1', 8080);
+const functions = getFunctions(getApp());
+connectFunctionsEmulator(functions, "127.0.0.1", 5001);
 
 // update the firestore settings
 // db.settings({timestampsInSnapshots: true});

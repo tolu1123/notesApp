@@ -25,13 +25,20 @@ function NotesApp() {
   
   const [userId, setUserId] = useState('');
 
-  loader = onAuthStateChanged(auth, (user) => {
-    if (!user.emailVerified || !user) {
-      navigate("/login");
-    }
-    // Add a functionality to check the current state of the darkmode theme and reconcile if there is a conflict with local storage.
-  });
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if(user) {
+        if (!user.emailVerified || !user) {
+          navigate("/login");
+        }
+      }else {
+        console.log('we go back to login')
+        navigate("/login");
+      }
+    });
 
+    return () => unsub();
+  }, [])
   //The state for dark theme
   const [darkTheme, setDarkTheme] = useState(JSON.parse(localStorage.getItem('darkTheme')) || false);
 

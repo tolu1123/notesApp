@@ -943,6 +943,10 @@ video {
   cursor: pointer;
 }
 
+.cursor-auto {
+  cursor: auto;
+}
+
 .resize {
   resize: both;
 }

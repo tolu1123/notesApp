@@ -217,9 +217,13 @@ export default function Login() {
                   <label htmlFor="rememberMe">Remember me</label>
                 </div>
 
-                <Link to="/forgot-password" className="text-fullBlack inter-regular forgotPassword">
+                <p className="text-fullBlack inter-regular forgotPassword cursor-pointer"
+                onClick={() => {
+                  navigate('/forgot-password')
+                }}
+                >
                   Forgot password?
-                </Link>
+                </p>
               </div>
 
               <div className="loginButton">
