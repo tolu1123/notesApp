@@ -82,9 +82,7 @@ function NotesApp() {
     const searchParam = location.search;
 
     const unsub = onAuthStateChanged(auth, async(user) => {
-      if(!user.emailVerified || !user) {
-        navigate("/login");
-      }else if (mode === 'verifyEmail') {
+      if (mode === 'verifyEmail') {
         const actionCode = getParameterByName('oobCode');
         await applyActionCode(auth, actionCode);
         console.log('Email verified successfully');
@@ -96,7 +94,7 @@ function NotesApp() {
       }else if (mode === 'resetPassword') {
         console.log('Routing to create new password');
         navigate(`/createNewPassword${searchParam}`);
-      }else {
+      }else if(!emailVerified || !user) {
         console.log('we go back to login')
         navigate("/login");
       }
@@ -109,7 +107,7 @@ function NotesApp() {
 
 
   // State to monitor hamburger
-  const [hamburgerState, setHamburgerState] = useState(false);
+  const [hamburgerState, setHamburgerState] =useState(false);
   // State to monitor the mobileSearchInput
   const [mobileSearchInput, setMobileSearchInput] = useState(false);
   const [userData, setUserData] = useState({} || localStorage.getItem(user));
