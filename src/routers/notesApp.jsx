@@ -32,7 +32,7 @@ async function loader() {
     const actionCode = getParameterByName('oobCode');
     await applyActionCode(auth, actionCode);
     console.log('Email verified successfully')
-    return redirect('/');
+    return true;
   } else {
     return null;
   }
