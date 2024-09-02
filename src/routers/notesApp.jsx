@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useContext } from "react";
 import ReactDOM from "react-dom/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, redirect } from "react-router-dom";
 import { applyActionCode, onAuthStateChanged, signOut } from "firebase/auth";
 
 import "../output.css";
@@ -22,6 +22,7 @@ function getParameterByName(name) {
 }
 
 async function loader() {
+  console.log('loader taking over')
   const mode = getParameterByName('mode');
   if(mode === 'resetPassword') {
     const searchParam = new URL(window.location.href).search;
@@ -31,8 +32,10 @@ async function loader() {
     const actionCode = getParameterByName('oobCode');
     await applyActionCode(auth, actionCode);
     console.log('Email verified successfully')
+    return redirect('/');
+  } else {
+    return null;
   }
-  return null
 }
 
 

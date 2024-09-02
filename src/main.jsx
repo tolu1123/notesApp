@@ -38,6 +38,12 @@ const router = createBrowserRouter([
     errorElement: <h1>404 Not Found</h1>
   },
   {
+    path: '/index',
+    element: <NotesApp />,
+    loader: urlChecker,
+    errorElement: <h1>404 Not Found</h1>
+  },
+  {
     path: 'login',
     element: <Login />,
     action: loginAction,
