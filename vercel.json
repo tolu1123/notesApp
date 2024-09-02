@@ -7,6 +7,14 @@
       {
         "src": "/__/firebase/init.json",
         "dest": "/signin_helpers/init.json"
+      }, 
+      {
+        "src": "/createNewPassword(?:\\?.*)?$",
+        "dest": "/index.html"
+      },
+      {
+        "src": "/account-registered(?:\\?.*)?$",
+        "dest": "/index.html"
       },
       {
         "handle": "filesystem"

@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useContext } from "react";
 import ReactDOM from "react-dom/client";
-import { useNavigate, redirect } from "react-router-dom";
+import { useNavigate, redirect, useLocation, Redirect } from "react-router-dom";
 import { applyActionCode, onAuthStateChanged, signOut } from "firebase/auth";
 
 import "../output.css";
@@ -36,8 +36,11 @@ function NotesApp() {
     const loader = async () => {
       const mode = getParameterByName('mode');
       if(mode === 'resetPassword') {
-        const searchParam = new URL(window.location.href).search;
-        return redirect(`/createNewPassword${searchParam}`);
+        console.log('The need to route to create new password')
+        const location = useLocation();
+        const searchParam = new URL(location).search;
+        console.log(location, searchParam)
+        return <Redirect to={`/createNewPassword${searchParam}`} />;
       }else if (mode === 'verifyEmail') {
         //If the mode is to verify the mail, we will apply the action code
         const actionCode = getParameterByName('oobCode');
