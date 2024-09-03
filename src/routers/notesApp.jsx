@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useContext } from "react";
 import ReactDOM from "react-dom/client";
-import { useNavigate, redirect, useLocation, Redirect } from "react-router-dom";
+import { useNavigate, redirect, useLocation } from "react-router-dom";
 import { applyActionCode, onAuthStateChanged, signOut } from "firebase/auth";
 
 import "../output.css";
@@ -29,7 +29,8 @@ let loader = () => {
 function NotesApp() {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
+  const [user, setUser] = useState('');
   const [userId, setUserId] = useState('');
 
   // useEffect(() => {
@@ -84,7 +85,7 @@ function NotesApp() {
   useEffect(() => {
     const mode = getParameterByName('mode');
     const searchParam = location.search;
-
+    console.log('This is the useEffect for authorization')
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (mode === 'verifyEmail') {
         await verifyCode()
@@ -97,14 +98,17 @@ function NotesApp() {
       }else if (mode === 'resetPassword') {
         console.log('Routing to create new password');
         navigate(`/createNewPassword${searchParam}`);
-      }else if(!user.emailVerified || !user) {
+      }else if(!user?.emailVerified || !user) {
         console.log('we go back to login')
         navigate("/login");
+      } else if(user){
+        setUser(user);
       }
     });
 
     return () => unsub();
   }, [location, navigate])
+
   //The state for dark theme
   const [darkTheme, setDarkTheme] = useState(JSON.parse(localStorage.getItem('darkTheme')) || false);
 
@@ -125,14 +129,14 @@ function NotesApp() {
   );
 
   useEffect(() => {
-    if (refreshedState === false) {
+    if (refreshedState === false && user !== '' && !user) {
       // We reload the page on first entry to ensure all our networks made are cached for offline navigation.
       window.location.reload();
       // Store the state in localStorage so that it persists across reloads
       localStorage.setItem("refreshedState", "true");
       setRefreshedState(true);
     }
-  }, [refreshedState]);
+  }, [refreshedState, user]);
 
   useEffect(() => {
     //Set the dark-color-mode of the html element.

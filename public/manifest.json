@@ -3,12 +3,12 @@
     "short_name": "NotesApp",
     "icons": [
     {
-        "src": "/assets/NotesApp-icon-sm.png",
+        "src": "/assets/iconSm.png",
         "sizes": "192x192",
         "type": "image/png"
     },
     {
-        "src": "/assets/NotesApp-icon-lg.png",
+        "src": "/assets/iconLg.png",
         "sizes": "512x512",
         "type": "image/png"
     }

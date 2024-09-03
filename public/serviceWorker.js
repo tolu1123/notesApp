@@ -91,6 +91,10 @@ const cacheFirst = async ({ request, preloadResponsePromise}) => {
 //We will also handle what happens to request when the serviceWorker 
 //is still under activation
 self.addEventListener('fetch', (event) => {
+    if(event.request.method === 'POST') {
+      return;
+    }
+    
     event.respondWith(
         cacheFirst({
             request: event.request,

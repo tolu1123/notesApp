@@ -97,7 +97,7 @@ export default function Login() {
         if(user.emailVerified ) {
           navigate('/');
         }else {
-          navigate('/login')
+          //navigate('/login')
           //We will inform the user to verify his or her mail.
           //Set the contents
           errorDiv.current.textContent = `Please Verify your mail`;
