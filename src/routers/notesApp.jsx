@@ -93,17 +93,13 @@ function NotesApp() {
           //We make a delay
         }, 2000)
         // You might want to navigate somewhere else after email verification
-        navigate('/'); // Example: redirect to an email verified page
+        //navigate('/'); // Example: redirect to an email verified page
       }else if (mode === 'resetPassword') {
         console.log('Routing to create new password');
         navigate(`/createNewPassword${searchParam}`);
-      }else if(!user.emailVerified) {
+      }else if(!user.emailVerified || !user) {
         console.log('we go back to login')
         navigate("/login");
-      }
-
-      if(!user) {
-        navigate("/login")
       }
     });
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import { Form, Link, useNavigate } from "react-router-dom";
+import { Form, Link, useNavigate, redirect } from "react-router-dom";
 
 import { signInWithEmailAndPassword, onAuthStateChanged, setPersistence, browserSessionPersistence, browserLocalPersistence} from "firebase/auth";
 
@@ -25,7 +25,9 @@ export async function action({ request }) {
     await setPersistence(auth, browserSessionPersistence)
   }
   // sign in the user with the credentials gotten
-  await signInWithEmailAndPassword(auth, email, password).catch((error) => {
+  await signInWithEmailAndPassword(auth, email, password).then(response => {
+    return redirect('/');
+  }).catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
     // Incase of any error, show us the error
