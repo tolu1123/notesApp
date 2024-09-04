@@ -59,8 +59,8 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
         const previewFun = () => setViewMode('preview');
 
         
-        edit.classList.add('hidden', '!text-[#0969da]', '!bg-[rgba(175,184,173,0.2)]');
-        preview.classList.add('!text-[#0969da]', '!bg-[rgba(175,184,173,0.2)]');
+        edit.classList.add('hidden', '!bg-[#0969da]', '!text-white', '!p-0.5');
+        preview.classList.add('!bg-[#0969da]', '!text-white', '!p-0.5');
 
         edit.addEventListener('click', editFun);
         preview.addEventListener('click', previewFun);
@@ -408,6 +408,9 @@ export default function Editor({displayNote, setDisplayNote,forceChange, setForc
         value={content}
         onChange={(value) => {saveContent(value)}}
         preview='preview'
+        previewOptions={{
+            rehypePlugins: [[rehypeSanitize]],
+        }}
         height='100%'
         overflow={false}
         className='editor !h-full bg-white dark:bg-black wmde-markdown-var !flex-grow'

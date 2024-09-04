@@ -86,7 +86,7 @@ export default function NoteList({mobileSearchInput, setMobileSearchInput, searc
             {/* The created notelist to display the already created notes */}
             <div className="noteList flex-grow h-full overflow-y-auto p-5">
                 {/* Creating the mobile search input */}
-                <div className={['mobileSearch', 'w-full', 'flex', 'flex-row','relative', 'overflow-visible', mobileSearchInput? 'h-fit translate-y-0 opacity-100 p-0.5': 'h-0 opacity-0 -translate-y-10'].join(' ')}>
+                <div className={['mobileSearch', 'w-full', 'flex', 'flex-row','relative', 'overflow-visible', mobileSearchInput && notes.length > 0? 'h-fit translate-y-0 opacity-100 p-0.5': 'h-0 opacity-0 -translate-y-10'].join(' ')}>
 
                     {/* the search functionality */}
                     <input 

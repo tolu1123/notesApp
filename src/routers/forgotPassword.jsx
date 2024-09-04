@@ -66,7 +66,7 @@ export default function ForgotPassword() {
 
   useEffect(() => {
    const unSub = onAuthStateChanged(auth, (user) => {
-      if (user) {
+      if (user.emailVerified) {
         navigate("/");
       } else {
         console.log("user not signed in!");
@@ -75,7 +75,7 @@ export default function ForgotPassword() {
     return () => unSub();
   }, []);
 
-  //This is 
+  //This is a useEffect that debounces the button for 60 seconds
   useEffect(() => {
     let timer;
     if (disableBtn) {

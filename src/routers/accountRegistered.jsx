@@ -18,45 +18,45 @@ export default function AccountRegistered() {
   
   
   
-    // useEffect(() => {
-    //   const unSubscribeAuth = onAuthStateChanged(auth, (user) => {
-    //     if (user) {
-    //       if(user.emailVerified) {
-    //         navigate('/');
-    //       }else {
-    //         //We will inform the user to verify his or her mail.
-    //         console.log('Verify your mail.')
-    //         //Set the contents
-    //         errorDiv.current.textContent = `Please Verify your mail`;
-    //         //Remove the error colors
-    //         errorDiv.current.classList.remove('border-red', 'text-red');
-    //         //Add text and border-color
-    //         errorDiv.current.classList.add('border-green', 'text-green');
-    //         //Remove the hidden class to display the error
-    //         errorDiv.current.classList.remove('hidden')
-    //         //Set a timeout to later hide the error div
-    //         setTimeout(() => {
-    //             errorDiv.current.classList.add('hidden')
-    //             //Remove the error colors
-    //             errorDiv.current.classList.remove('border-green', 'text-green');
-    //             //Add text and border-color
-    //             errorDiv.current.classList.add('border-red', 'text-red');
-    //         }, 4000)
-    //       }
-    //     } else {
-    //       console.log("User is not signed in");
-    //     }
-    //   });
+    useEffect(() => {
+      const unSubscribeAuth = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          if(user.emailVerified) {
+            navigate('/');
+          }else {
+            //We will inform the user to verify his or her mail.
+            console.log('Verify your mail.')
+            //Set the contents
+            errorDiv.current.textContent = `Please Verify your mail`;
+            //Remove the error colors
+            errorDiv.current.classList.remove('border-red', 'text-red');
+            //Add text and border-color
+            errorDiv.current.classList.add('border-green', 'text-green');
+            //Remove the hidden class to display the error
+            errorDiv.current.classList.remove('hidden')
+            //Set a timeout to later hide the error div
+            setTimeout(() => {
+                errorDiv.current.classList.add('hidden')
+                //Remove the error colors
+                errorDiv.current.classList.remove('border-green', 'text-green');
+                //Add text and border-color
+                errorDiv.current.classList.add('border-red', 'text-red');
+            }, 4000)
+          }
+        } else {
+          console.log("User is not signed in");
+        }
+      });
   
-    //   return () => unSubscribeAuth();
-    // }, []);
+      return () => unSubscribeAuth();
+    }, []);
   
   
     
     return (
       <>
         {/* A div for the errors */}
-        <div ref={errorDiv} className="error-div absolute right-5 top-5 text-red border border-solid rounded-md border-red text-base py-4 px-6 mt-5 hidden">
+        <div ref={errorDiv} className="error-div sm:min-w-64 absolute right-5 top-5 text-red border border-solid rounded-md border-red text-base py-4 px-6 mt-5 hidden">
           
         </div>
   

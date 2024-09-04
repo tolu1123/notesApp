@@ -79,7 +79,11 @@ export default function MainContainer({
   function outlet() {
     if(notes.length > 0){
       if(selectedNote.title !== undefined){
-        return <Editor displayNote={displayNote} setDisplayNote={(state)=>setDisplayNote(state)} forceChange={forceChange} setForceChange={setForceChange}/>
+        return <Editor 
+        displayNote={displayNote} 
+        setDisplayNote={(state)=>setDisplayNote(state)} forceChange={forceChange} 
+        setForceChange={setForceChange}
+        />
       }else{
         return <SelectNote/>
       }

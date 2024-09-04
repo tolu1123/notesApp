@@ -2,6 +2,7 @@ import React,{useState, useEffect, useContext, useRef} from "react";
 
 import '../output.css';
 import { userContext } from "../contexts/userContext";
+import { userNotes } from "../contexts/notesContext";
 import { themeContext } from "../contexts/themeContext";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../auth/firebase";
@@ -22,6 +23,7 @@ export default function Header({
 }) {
 
   const {userData, setUserData} = useContext(userContext);
+  const {notes, setNotes} = useContext(userNotes);
   const {darkTheme, setDarkTheme} = useContext(themeContext);
 
   const profileRef = useRef(null);
@@ -100,15 +102,13 @@ export default function Header({
 }, [selectedImg]);
 
 
-  console.log('userData',userData)
-
   return (
     <header className="flex flex-row justify-between items-center px-4 py-3 shadow-lg dark:bg-fullBlack border-solid dark:border-b dark:border-gray z-20 h-[80px]">
       <h1 className="fake-logo poppins-medium dark:text-white">NotesApp</h1>
 
       <div className="flex flex-row items-center inter-regular gap-5 ">
         {/* The search input functionality */}
-        <div className="flex flex-row relative overflow-visible">
+        <div className={`flex flex-row relative overflow-visible ${notes.length < 1 ? 'hidden': ''}`}>
           <input
             className="search-note hidden sm:flex border dark:border-[1.5px] border-solid dark:text-[#dfdfdf] dark:bg-transparent border-gray dark:border-t-[#dfdfdf] dark:border-r-[#dfdfdf] dark:border-l-[#767676] dark:border-b-[#767676] text-sm pl-7 py-1 rounded-full outline-none focus:shadow-sm"
             placeholder="Search notes..."
@@ -158,18 +158,7 @@ export default function Header({
           {hamburgerState && (
             <div
               ref={dropDown}
-              className={[
-                "dropDown",
-                "w-fit",
-                "absolute",
-                "right-5",
-                "bg-white",
-                "top-16",
-                "rounded-md",
-                "dark:bg-fullBlack",
-                "z-10",
-                "dark:text-white",
-              ].join(" ")}
+              className={`dropDown w-fit absolute right-5 bg-white top-16 rounded-md dark:bg-fullBlack z-10 dark:text-white dark:shadow-sm dark:shadow-white shadow-sm shadow-gray`}
             >
               <ul className="flex flex-col flex-nowrap poppins-regular divide-y divide-gray3 text-sm">
                 {/* The li tag that contains the profile picture and the account holder details */}

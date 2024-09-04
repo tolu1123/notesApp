@@ -8,9 +8,9 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-#dist
-#dist-ssr
-#*.local
+dist
+dist-ssr
+*.local
 
 # Editor directories and files
 .#vscode/*
@@ -22,3 +22,18 @@ node_modules
 *.njsproj
 *.sln
 *.sw?
+
+firebase.json
+firestore-debug.log
+ui-debug.log
+firestore.rules
+package.json
+package-lock.json
+firestore.indexes.json
+vite.config.js
+.firebaseserc
+.eslintrc.cjs
+vercel.json
+
+functions
+.firebase

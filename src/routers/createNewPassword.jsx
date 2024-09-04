@@ -35,9 +35,9 @@ export async function  action({request}) {
             const errorElement = document.querySelector('.errorDiv');
             //Fill the errorElement with the errorMessage
             if(errorCode == 'auth/expired-action-code') {
-                errorElement.textContent = 'Your emaillink has expired, try resetting your password again.'
+                errorElement.textContent = 'Your emai link has expired, try resetting your password again.'
             }else if(errorCode == 'auth/invalid-action-code') {
-                errorElement.textContent = 'Your emaillink is invalid, try resetting your password again.'
+                errorElement.textContent = 'Your email link is invalid, try resetting your password again.'
             }else if (errorCode == 'auth/weak-password') {
                 errorElement.textContent = 'The password is too weak.';
             } else {
@@ -90,7 +90,7 @@ export default function CreateNewPassword() {
     return (
         <>
             {/* The div to display if there is an error */}
-            <div className="errorDiv absolute right-5 top-10 p-5 border border-pink-400 border-solid text-500 inter-regular hidden"></div>
+            <div className="errorDiv sm:min-w-64 absolute right-5 top-10 p-5 border border-pink-400 border-solid text-500 inter-regular hidden"></div>
             {/* A link to return back to Reset password */}
             <button 
                 onClick={() => {

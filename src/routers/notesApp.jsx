@@ -32,74 +32,40 @@ function NotesApp() {
 
   const [user, setUser] = useState('');
   const [userId, setUserId] = useState('');
+  const errorDiv = useRef(null);
 
-  // useEffect(() => {
-  //   console.log('loader taking over')
-  //   const loader = async () => {
-  //     const mode = getParameterByName('mode');
-  //     if(mode === 'resetPassword') {
-  //       console.log('The need to route to create new password')
-  //       const location = useLocation();
-  //       const searchParam = new URL(location).search;
-  //       console.log(location, searchParam)
-  //       return <Redirect to={`/createNewPassword${searchParam}`} />;
-  //     }else if (mode === 'verifyEmail') {
-  //       //If the mode is to verify the mail, we will apply the action code
-  //       const actionCode = getParameterByName('oobCode');
-  //       await applyActionCode(auth, actionCode);
-  //       console.log('Email verified successfully')
-  //       return true;
-  //     } else {
-  //       return null;
-  //     }
-  //   }
-  //   loader();
-  // }, [])
-  // useEffect(() => {
-  //   const handleRouting = async () => {
-  //     const mode = getParameterByName('mode');
-  //     const searchParam = location.search;
-
-  //     if (mode === 'resetPassword') {
-  //       console.log('Routing to create new password');
-  //       navigate(`/createNewPassword${searchParam}`);
-  //     } else if (mode === 'verifyEmail') {
-  //       const actionCode = getParameterByName('oobCode');
-  //       await applyActionCode(auth, actionCode);
-  //       console.log('Email verified successfully');
-  //       setTimeout(() => {
-  //         //We make a delay
-  //       }, 2000)
-  //       // You might want to navigate somewhere else after email verification
-  //       navigate('/'); // Example: redirect to an email verified page
-  //     }
-  //   };
-
-  //   handleRouting();
-  // }, [location, navigate]);
   const verifyCode = async () => {
     const actionCode = getParameterByName('oobCode');
-    await applyActionCode(auth, actionCode);
+    try {
+      await applyActionCode(auth, actionCode);
+      setTimeout(() => {
+        //We make a delay
+      }, 2000)
+      navigate('/login?success=emailVerified');
+    } catch (error) {
+      const errorCode = error.code;
+      if(errorCode === 'auth/expired-action-code') {
+        navigate('/login?error=expired-code')
+      }else if(errorCode === 'auth/invalid-action-code') {
+        navigate('/login?error=invalid-code')
+      }else {
+        navigate('/login?error=unknown-error')
+      }
+    }
   }
 
   useEffect(() => {
     const mode = getParameterByName('mode');
     const searchParam = location.search;
-    console.log('This is the useEffect for authorization')
+
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (mode === 'verifyEmail') {
         await verifyCode()
-        console.log('Email verified successfully');
-        setTimeout(() => {
-          //We make a delay
-        }, 2000)
-        // You might want to navigate somewhere else after email verification
-        //navigate('/'); // Example: redirect to an email verified page
       }else if (mode === 'resetPassword') {
         console.log('Routing to create new password');
         navigate(`/createNewPassword${searchParam}`);
       }else if(!user?.emailVerified || !user) {
-        console.log('we go back to login')
+
         navigate("/login");
       } else if(user){
         setUser(user);
@@ -288,35 +254,42 @@ function NotesApp() {
     <userContext.Provider value={{userData, setUserData}} >
       <userNotes.Provider value={{notes, setNotes}}>
         <themeContext.Provider value={{darkTheme, setDarkTheme}}>
-          <div className="flex flex-col h-dvh relative">
+          <>
+            {/* A div for the errors */}
+            <div ref={errorDiv} className="error-div sm:min-w-64 absolute right-5 top-5 text-red border border-solid rounded-md border-red text-base py-4 px-6 mt-5 hidden">
+            
+            </div>
 
-            <Header
-              mobileInput={mobileInput}
-              mobileSearchInput={mobileSearchInput}
-              setMobileSearchInput={setMobileSearchInput}
-              handleSignOut={handleSignOut}
-              hamburgerState={hamburgerState}
-              setHamburgerState={setHamburgerState}
-              hamburger={hamburger}
-              dropDown={dropDown}
-              hamburgerContainer={hamburgerContainer}
-              searchValue={searchValue}
-              setSearchValue={setSearchValue}
-            />
+            <div className="flex flex-col h-dvh relative">
 
-            {/* This is the main section of the body */}
-            <MainContainer
-              mobileSearchInput={mobileSearchInput}
-              setMobileSearchInput={setMobileSearchInput}
-              searchInputRef={searchInputRef}
-              hamSearchInput={hamSearchInput}
-              searchValue={searchValue}
-              setSearchValue={setSearchValue}
-              forceChange={forceChange}
-              setForceChange={setForceChange}
-            />
+              <Header
+                mobileInput={mobileInput}
+                mobileSearchInput={mobileSearchInput}
+                setMobileSearchInput={setMobileSearchInput}
+                handleSignOut={handleSignOut}
+                hamburgerState={hamburgerState}
+                setHamburgerState={setHamburgerState}
+                hamburger={hamburger}
+                dropDown={dropDown}
+                hamburgerContainer={hamburgerContainer}
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
+              />
 
-          </div>
+              {/* This is the main section of the body */}
+              <MainContainer
+                mobileSearchInput={mobileSearchInput}
+                setMobileSearchInput={setMobileSearchInput}
+                searchInputRef={searchInputRef}
+                hamSearchInput={hamSearchInput}
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
+                forceChange={forceChange}
+                setForceChange={setForceChange}
+              />
+
+            </div>
+          </>
         </themeContext.Provider>
       </userNotes.Provider>
     </userContext.Provider>

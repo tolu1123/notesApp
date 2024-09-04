@@ -17,17 +17,27 @@ export async function action({ request }) {
   const { username, password, rememberMe } = Object.fromEntries(formData);
   // We get the email from the username
   const email = await returnEmail(username);
-  console.log(email, password, rememberMe);
-  //We will use the state of the rememberMe to determine if we should remember the user or not && also determine the level of the data persistence
-  if(rememberMe === 'on'){
-    await setPersistence(auth, browserLocalPersistence)
-  } else {
-    await setPersistence(auth, browserSessionPersistence)
-  }
-  // sign in the user with the credentials gotten
-  await signInWithEmailAndPassword(auth, email, password).then(response => {
-    return redirect('/');
-  }).catch((error) => {
+
+  try {
+    //We will use the state of the rememberMe to determine if we should remember the user or not && also determine the level of the data persistence
+    if(rememberMe === 'on'){
+      await setPersistence(auth, browserLocalPersistence)
+    } else {
+      await setPersistence(auth, browserSessionPersistence)
+    }
+    // sign in the user with the credentials gotten
+    const response = await signInWithEmailAndPassword(auth, email, password)
+    
+    if(response.user.emailVerified) {
+      return redirect('/');
+    }else {
+      console.log('Email not verified')
+      //We will redirect the user to the resend verification page to verify his mail
+      localStorage.setItem('user', JSON.stringify(response.user));
+      return redirect('/resend-verification');
+    }
+
+  }catch(error) {
     const errorCode = error.code;
     const errorMessage = error.message;
     // Incase of any error, show us the error
@@ -71,8 +81,8 @@ export async function action({ request }) {
         errorDiv.classList.add('hidden')
       }, 4000)
     }
-  });
-  return "success";
+    return null;
+  };
 }
 
 export default function Login() {
@@ -89,6 +99,51 @@ export default function Login() {
   //This state is used to store the data of a user when a user logins
   // if the user's data has not been stored, we will then store it using the auth listener
   const [user, setUserData] = useState({});
+
+  //On navigation from the main page and there is an error due to the code used to verify the mail
+  //We will display the error to the user
+  // Function to get parameter
+  function getParameterByName(name) {
+    const searchParams = new URLSearchParams(window.location.search);
+    return searchParams.get(name);
+  }
+
+  useEffect(() => {
+    const succedMsg = getParameterByName('success');
+    if(succedMsg === 'emailVerified'){
+      errorDiv.current.textContent = 'Email verified successfully. You can now login.'
+      //Remove the error colors
+      errorDiv.current.classList.remove('border-red', 'text-red', 'hidden');
+      //Add text and border-color
+      errorDiv.current.classList.add('border-green', 'text-green');
+      setTimeout(() => {
+        //Remove the error colors
+        errorDiv.current.classList.remove('border-green', 'text-green');
+        //Add text and border-color
+        errorDiv.current.classList.add('border-red', 'text-red', 'hidden');
+      }, 4000)
+    }
+  }, [])
+
+  useEffect(() => {
+    const error = getParameterByName('error');
+    let errorMessage;
+    if(error === 'expired-code'){
+      errorMessage = 'The code has expired. Try signing in again.'
+    }else if(error === 'invalid-code'){
+      errorMessage = 'The code has been used by another user. Try signing in again.'
+    }else {
+      errorMessage = 'An error occurred. Please try signing in again.'
+    }
+    if(error) {
+      errorDiv.current.textContent = errorMessage;
+      errorDiv.current.classList.remove('hidden');
+      setTimeout(() => {
+        errorDiv.current.classList.add('hidden');
+        navigate('/login')
+      }, 4000)
+    }
+  }, [])
 
 
   useEffect(() => {
@@ -125,7 +180,7 @@ export default function Login() {
   return (
     <>
       {/* A div for the errors */}
-      <div ref={errorDiv} className="error-div absolute right-5 top-5 text-red border border-solid rounded-md border-red text-base py-4 px-6 mt-5 hidden">
+      <div ref={errorDiv} className="error-div sm:min-w-64 absolute right-5 top-5 text-red border border-solid rounded-md border-red text-base py-4 px-6 mt-5 hidden">
         
       </div>
 

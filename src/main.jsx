@@ -22,6 +22,9 @@ import CreateNewPassword, {
 } from './routers/createNewPassword';
 
 import AccountRegistered from './routers/accountRegistered';
+import ResendVMail, {
+  loader as userChecker
+} from './routers/resendVerification';
 
 
 import{
@@ -62,6 +65,10 @@ const router = createBrowserRouter([
   }, {
     path: 'account-registered',
     element: <AccountRegistered />
+  }, {
+    path: 'resend-verification',
+    element: <ResendVMail />,
+    loader: userChecker,
   }
 ])
 

@@ -127,7 +127,7 @@ export default function SignUp() {
   return (
     <>
       {/* A div for the errors */}
-      <div ref={errorDiv} className="error-div absolute right-5 top-5 text-red border border-solid rounded-md border-red text-base py-4 px-6 mt-5 hidden">
+      <div ref={errorDiv} className="error-div sm:min-w-64 absolute right-5 top-5 text-red border border-solid rounded-md border-red text-base py-4 px-6 mt-5 hidden">
         
       </div>
 
