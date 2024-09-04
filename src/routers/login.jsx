@@ -15,8 +15,9 @@ export async function action({ request }) {
   const formData = await request.formData();
   // We destructure the email and password from the form data
   const { username, password, rememberMe } = Object.fromEntries(formData);
-  // We get the email from the username
+  // We get the email from the username if the value entered is not the email
   const email = await returnEmail(username);
+  console.log('This is the mail returned from signing in.', email)
 
   try {
     //We will use the state of the rememberMe to determine if we should remember the user or not && also determine the level of the data persistence
@@ -28,7 +29,7 @@ export async function action({ request }) {
     // sign in the user with the credentials gotten
     const response = await signInWithEmailAndPassword(auth, email, password)
     
-    if(response.user.emailVerified) {
+    if(response.user?.emailVerified) {
       return redirect('/');
     }else {
       console.log('Email not verified')
@@ -149,7 +150,7 @@ export default function Login() {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        if(user.emailVerified ) {
+        if(user?.emailVerified ) {
           navigate('/');
         }else {
           //navigate('/login')
@@ -222,7 +223,7 @@ export default function Login() {
                   className="poppins-regular text-bold text-sm transition duration-200 ease-linear absolute left-2 top-2 peer-focus:-translate-y-5 bg-white
                               peer-valid:-translate-y-5"
                 >
-                  Username
+                  Username or Email
                 </label>
               </div>
 

@@ -22,6 +22,7 @@ import {
     addDoc,
     query,
     where,
+    or,
     setDoc,
     connectFirestoreEmulator,
     initializeFirestore, 
@@ -180,10 +181,9 @@ export async function crossCheckField(type , value) {
 
 // get the email from the passed in username for implementing login
 export async function returnEmail(value) {
-    console.log(value);
     let email = '';
-    const q = query(userRef, where('username', '==', value))
-    // we will try to see if we have any user that has that specific username then we will return the associated email for login
+    const q = query(userRef, or(where('username', '==', value), where('email', '==', value )))
+    // we will try to see if we have any user that has that specific username or the email is valid then we will return the associated email for login
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach(doc => {
         let data = doc.data();

@@ -66,7 +66,7 @@ export default function ForgotPassword() {
 
   useEffect(() => {
    const unSub = onAuthStateChanged(auth, (user) => {
-      if (user.emailVerified) {
+      if (user?.emailVerified) {
         navigate("/");
       } else {
         console.log("user not signed in!");

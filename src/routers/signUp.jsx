@@ -84,7 +84,7 @@ export default function SignUp() {
   useEffect(() => {
     const unSubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
-        if(user.emailVerified) {
+        if(user?.emailVerified) {
           navigate('/');
         }else {
           //We will inform the user to verify his or her mail.
